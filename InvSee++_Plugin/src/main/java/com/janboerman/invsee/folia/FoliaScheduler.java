@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class FoliaScheduler implements Scheduler {
 
-    private InvseePlusPlus plugin;
+    private final InvseePlusPlus plugin;
 
     public FoliaScheduler(InvseePlusPlus plugin) {
         this.plugin = plugin;
