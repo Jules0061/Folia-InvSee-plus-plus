@@ -25,10 +25,10 @@ public interface Setup {
         if (serverSoftware == null)
             throw new RuntimeException(SupportedServerSoftware.getUnsupportedPlatformMessage(server));
 
-        SetupProvider provider = SetupImpl.SUPPORTED.getImplementationProvider(serverSoftware);
+        SetupProvider provider = SetupSupport.SUPPORTED.getImplementationProvider(serverSoftware);
 
         if (provider == null) {
-            String supportedVersionsMessage = SetupImpl.SUPPORTED.getUnsupportedVersionMessage(serverSoftware.getPlatform(), server);
+            String supportedVersionsMessage = SetupSupport.SUPPORTED.getUnsupportedVersionMessage(serverSoftware.getPlatform(), server);
             String legacyVersionsMessage = LegacyVersions.getLegacyVersionMessage(serverSoftware.getVersion());
 
             if (legacyVersionsMessage != null) {
@@ -54,12 +54,20 @@ class Impl_Paper_1_21_11 extends SetupImpl {
 
 //
 
-class SetupImpl implements Setup {
+//holds the version registry in its own class, so that neither SetupImpl nor its subclasses
+//are referenced from a superclass static initializer (avoids class loading deadlock).
+final class SetupSupport {
 
-    static SupportedServerSoftware<SetupProvider> SUPPORTED = new SupportedServerSoftware<>();
+    static final SupportedServerSoftware<SetupProvider> SUPPORTED = new SupportedServerSoftware<>();
     static {
-        SUPPORTED.registerSupportedVersion(Impl_Paper_1_21_11::new, ServerSoftware.PAPER_1_21_11);
+        SUPPORTED.registerSupportedVersion((p, l, s, c) -> new Impl_Paper_1_21_11(p, l, s, c), ServerSoftware.PAPER_1_21_11);
     }
+
+    private SetupSupport() {
+    }
+}
+
+class SetupImpl implements Setup {
 
     private final InvseePlatform platform;
     private final OfflinePlayerProvider offlinePlayerProvider;

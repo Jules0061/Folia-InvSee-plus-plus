@@ -5,14 +5,12 @@ import com.janboerman.invsee.spigot.api.EnderSpectatorInventory;
 import com.janboerman.invsee.spigot.api.EnderSpectatorInventoryView;
 import com.janboerman.invsee.spigot.api.Exempt;
 import com.janboerman.invsee.spigot.api.InvseeAPI;
-import com.janboerman.invsee.spigot.api.response.NotCreatedReason;
 import com.janboerman.invsee.spigot.api.response.NotOpenedReason;
 import com.janboerman.invsee.spigot.api.response.OpenResponse;
 import com.janboerman.invsee.spigot.api.response.SpectateResponse;
 import com.janboerman.invsee.spigot.api.target.Target;
 import com.janboerman.invsee.spigot.api.template.EnderChestSlot;
 import com.janboerman.invsee.spigot.perworldinventory.PerWorldInventorySeeApi;
-import com.janboerman.invsee.spigot.perworldinventory.ProfileId;
 import com.janboerman.invsee.spigot.perworldinventory.PwiCommandArgs;
 import com.janboerman.invsee.utils.Either;
 import com.janboerman.invsee.utils.StringHelper;
@@ -23,7 +21,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -71,22 +68,8 @@ public class EnderseeCommandExecutor implements CommandExecutor {
             }
 
             PwiCommandArgs pwiOptions = either.getRight();
-            CompletableFuture<Optional<UUID>> uuidFuture = isUuid
-                    ? CompletableFuture.completedFuture(Optional.of(uuid))
-                    : pwiApi.fetchUniqueId(playerNameOrUUID);
-
-            pwiFuture = uuidFuture.thenCompose(optId -> {
-                if (optId.isPresent()) {
-                    UUID uniqueId = optId.get();
-                    ProfileId profileId = new ProfileId(pwiApi.getHook(), pwiOptions, uniqueId);
-                    CompletableFuture<String> userNameFuture = isUuid
-                            ? CommandFeedback.fetchUserNameOrDefault(api, uniqueId)
-                            : CompletableFuture.completedFuture(playerNameOrUUID);
-                    return userNameFuture.thenCompose(playerName -> pwiApi.spectateEnderChest(uniqueId, playerName, creationOptions, profileId));
-                } else {
-                    return CompletableFuture.completedFuture(SpectateResponse.fail(NotCreatedReason.targetDoesNotExists(target)));
-                }
-            });
+            pwiFuture = CommandFeedback.pwiSpectate(api, pwiApi, uuid, playerNameOrUUID, target, pwiOptions,
+                    (uniqueId, playerName, profileId) -> pwiApi.spectateEnderChest(uniqueId, playerName, creationOptions, profileId));
         }
 
         CompletableFuture<OpenResponse<EnderSpectatorInventoryView>> fut;

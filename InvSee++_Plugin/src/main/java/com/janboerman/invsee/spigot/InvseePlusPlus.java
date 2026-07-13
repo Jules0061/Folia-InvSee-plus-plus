@@ -412,19 +412,9 @@ public class InvseePlusPlus extends JavaPlugin implements com.janboerman.invsee.
     }
 
     private static Scheduler makeScheduler(InvseePlusPlus plugin) {
-        boolean folia;
-        try {
-            Class.forName("io.papermc.paper.threadedregions.RegionizedServer");
-            folia = true;
-        } catch (ClassNotFoundException e) {
-            folia = false;
-        }
-
-        if (folia) {
-            return new FoliaScheduler(plugin);
-        } else {
-            return new DefaultScheduler(plugin);
-        }
+        //Paper 1.20.1+ implements the Folia region-scheduler API on regular Paper too,
+        //and this fork only supports Paper/Folia 1.21.11, so the Folia scheduler always works.
+        return new FoliaScheduler(plugin);
     }
 
     private static List<ResolveStrategyType> getUuidResolveStrategies(FileConfiguration config) {
