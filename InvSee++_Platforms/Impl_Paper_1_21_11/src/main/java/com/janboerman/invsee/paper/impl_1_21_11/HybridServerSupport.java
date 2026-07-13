@@ -60,10 +60,10 @@ public final class HybridServerSupport {
             MethodHandles.Lookup lookup = MethodHandles.lookup();
             try {
                 MethodHandle methodHandle = lookup.findVirtual(nmsPlayer.getClass(), "nextContainerCounterInt", MethodType.methodType(int.class));
-                //this should work on Mohist.
+
                 return (int) methodHandle.invoke(nmsPlayer);
             } catch (Throwable magmaMethodNotFound) {
-                //look up the obfuscated field name and get it by reflection?
+
                 RuntimeException ex = new RuntimeException("No method known of incrementing the player's container counter");
                 ex.addSuppressed(craftbukkitMethodNotFound);
                 ex.addSuppressed(magmaMethodNotFound);
@@ -72,14 +72,12 @@ public final class HybridServerSupport {
         }
     }
 
-    // return List<ItemStack> instead of NonNullList<ItemStack> to ensure compatibility with UniverseSpigot
     public static List<ItemStack> enderChestItems(PlayerEnderChestContainer enderChest) {
         try {
             return enderChest.items;
         } catch (NoSuchFieldError | IllegalAccessError vanillaFieldIsActuallyPrivate) {
             try {
-                //call the forge method: getContents()Ljava/util/List<net/minecraft/world/item/ItemStack>;
-                //fortunately CraftBukkit contains this method as well, so we can just call it directly without reflection! :D
+
                 return enderChest.getContents();
             } catch (Throwable forgeMethodNotFound) {
                 RuntimeException ex = new RuntimeException("No method known of getting the enderchest items");
@@ -95,7 +93,7 @@ public final class HybridServerSupport {
             return playerIO.load(new NameAndId(UUID.fromString(uuid), name))
                     .map(compoundTag -> TagValueInput.create(problemReporter, registryAccess, compoundTag));
         } catch (NoSuchMethodError craftbukkitMethodNotFound) {
-            //call the paper method: load(Ljava/lang/String;Ljava/lang/String;Lnet/minecraft/util/ProblemReporter;)Ljava/util/Optional
+
             MethodHandles.Lookup lookup = MethodHandles.lookup();
             try {
                 MethodHandle methodHandle = lookup.findVirtual(PlayerDataStorage.class, "load", MethodType.methodType(Optional.class, String.class, String.class, ProblemReporter.class));

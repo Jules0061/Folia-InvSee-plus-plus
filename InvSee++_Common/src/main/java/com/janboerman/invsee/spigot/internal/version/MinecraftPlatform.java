@@ -5,7 +5,6 @@ public enum MinecraftPlatform {
     CRAFTBUKKIT("CraftBukkit"),
     GLOWSTONE("Glowstone"),
     PAPER("Paper");
-    //TODO Folia
 
     private final String name;
 

@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 
 final class SingleValueMetric<T> extends SimpleMetric<T> {
-    public SingleValueMetric(@SourceId final String id, final Callable</*@Nullable*/ T> callable) throws IllegalArgumentException {
+    public SingleValueMetric(@SourceId final String id, final Callable< T> callable) throws IllegalArgumentException {
         super(id, callable);
     }
 

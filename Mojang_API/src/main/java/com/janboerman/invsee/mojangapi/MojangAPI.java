@@ -34,7 +34,7 @@ public class MojangAPI {
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
                 connection.setRequestMethod("GET");
-                connection.setConnectTimeout(5 * 1000); //5 seconds
+                connection.setConnectTimeout(5 * 1000);
                 connection.setRequestProperty("Accept", "application/json");
                 connection.setRequestProperty("User-Agent", "InvSee++/MojangAPI");
 
@@ -64,7 +64,7 @@ public class MojangAPI {
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
                 connection.setRequestMethod("GET");
-                connection.setConnectTimeout(5 * 1000); //5 seconds
+                connection.setConnectTimeout(5 * 1000);
                 connection.setRequestProperty("Accept", "application/json");
                 connection.setRequestProperty("User-Agent", "InvSee++/MojangAPI");
 

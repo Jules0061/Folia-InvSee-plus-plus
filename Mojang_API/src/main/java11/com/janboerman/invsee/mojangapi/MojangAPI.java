@@ -21,7 +21,6 @@ import org.json.simple.JSONObject;
 import static com.janboerman.invsee.mojangapi.ResponseUtils.*;
 
 public class MojangAPI {
-    //https://wiki.vg/Mojang_API
 
     private final HttpClient httpClient;
 
@@ -31,18 +30,11 @@ public class MojangAPI {
                 .build();
     }
 
-    /**
-     * Creates the Mojang API instance using the given HTTP client for all requests.
-     * @param httpClient the client to use for HTTP requests
-     */
     @Deprecated
     public MojangAPI(HttpClient httpClient) {
         this.httpClient = Objects.requireNonNull(httpClient);
     }
 
-    /**
-     * Creates the instance of the Mojang API using {@link HttpClient#newHttpClient()}.
-     */
     @Deprecated
     public MojangAPI() {
         this(HttpClient.newHttpClient());
@@ -60,7 +52,7 @@ public class MojangAPI {
             int statusCode = response.statusCode();
 
             if (statusCode == 200) {
-                //ok!
+
                 JSONObject json = readJSONObject(response);
                 String id = (String) json.get("id");
                 UUID uuid = UUIDHelper.dashed(id);
@@ -68,15 +60,14 @@ public class MojangAPI {
             }
 
             else {
-                //not ok
+
                 return handleNotOk(response);
             }
         });
     }
 
     public CompletableFuture<Optional<String>> lookupUserName(UUID uniqueId) {
-        //no longer use name history api: https://wiki.vg/Mojang_API#UUID_to_Name_History_.28Removed.29,
-        //use profile api instead:
+
         CompletableFuture<HttpResponse<InputStream>> future = httpClient.sendAsync(HttpRequest
                 .newBuilder(URI.create("https://sessionserver.mojang.com/session/minecraft/profile/" + UUIDHelper.unDashed(uniqueId)))
                 .header("Accept", "application/json")
@@ -88,14 +79,14 @@ public class MojangAPI {
            int statusCode = response.statusCode();
 
            if (statusCode == 200) {
-               //ok!
+
                JSONObject profileJson = readJSONObject(response);
                String userName = (String) profileJson.get("name");
                return Optional.of(userName);
            }
 
            else {
-               //not ok
+
                return handleNotOk(response);
            }
         });
@@ -105,22 +96,22 @@ public class MojangAPI {
         int statusCode = response.statusCode();
 
         if (statusCode == HTTP_NO_CONTENT) {
-            //no content - a player with that username does not exist.
+
             return handleNoContent(response);
         }
 
         else if (statusCode == HTTP_BAD_REQUEST) {
-            //bad request
+
             return handleBadRequest(response);
         }
 
         else if (statusCode == HTTP_TOO_MANY_REQUESTS) {
-            //rate limited
+
             return handleTooManyRequests(response);
         }
 
         else {
-            //unknown response code - undocumented behaviour from mojang's api
+
             return handleUnknownStatusCode(response);
         }
     }

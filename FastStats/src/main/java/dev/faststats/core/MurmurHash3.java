@@ -4,39 +4,12 @@ import com.google.gson.JsonObject;
 
 import java.nio.charset.StandardCharsets;
 
-/**
- * Implementation of the MurmurHash3 128-bit hash algorithm.
- * <p>
- * MurmurHash is a non-cryptographic hash function suitable for general hash-based lookup.
- * It provides excellent distribution and performance while minimizing collisions.
- * </p>
- * <p>
- * This implementation follows the MurmurHash3_x64_128 variant as described at:
- * <a href="https://en.wikipedia.org/wiki/MurmurHash">https://en.wikipedia.org/wiki/MurmurHash</a>
- * </p>
- * <p>
- * Original algorithm by Austin Appleby. The name comes from the two elementary operations
- * it uses: multiply (MU) and rotate (R).
- * </p>
- */
 final class MurmurHash3 {
     public static String hash(final JsonObject object) {
         final long[] hash = MurmurHash3.hash(object.toString());
         return Long.toHexString(hash[0]) + Long.toHexString(hash[1]);
     }
 
-    /**
-     * Computes the 128-bit MurmurHash3 hash of the input string.
-     * <p>
-     * The string is encoded to UTF-8 bytes before hashing. The result is returned
-     * as an array of two long values (64 bits each), combined they form a 128-bit hash.
-     * </p>
-     *
-     * @param data the input string to hash
-     * @return a 2-element array containing the lower 64 bits at index 0 and upper 64 bits at index 1
-     * @see <a href="https://en.wikipedia.org/wiki/MurmurHash">MurmurHash on Wikipedia</a>
-     */
-//    @Contract(value = "_ -> new", pure = true)
     private static long[] hash(final String data) {
         final byte[] bytes = data.getBytes(StandardCharsets.UTF_8);
         long h1 = 0L;
@@ -46,7 +19,6 @@ final class MurmurHash3 {
         final int length = bytes.length;
         final int blocks = length / 16;
 
-        // Process 128-bit blocks
         for (int i = 0; i < blocks; i++) {
             int k1 = getInt(bytes, i * 16);
             int k2 = getInt(bytes, i * 16 + 4);
@@ -72,7 +44,6 @@ final class MurmurHash3 {
             h2 = h2 * 5 + 0x38495ab5;
         }
 
-        // Tail
         int k1 = 0;
         int k2 = 0;
         int k3 = 0;
@@ -128,7 +99,6 @@ final class MurmurHash3 {
                 h1 ^= k1;
         }
 
-        // Finalization
         h1 ^= length;
         h2 ^= length;
 
@@ -144,19 +114,6 @@ final class MurmurHash3 {
         return new long[]{h1, h2};
     }
 
-    /**
-     * Finalization mix function to avalanche the bits in the hash.
-     * <p>
-     * This function improves the distribution of the hash by XORing and multiplying
-     * with carefully chosen constants, ensuring that similar inputs produce very
-     * different outputs (avalanche effect).
-     * </p>
-     *
-     * @param k the 64-bit value to mix
-     * @return the mixed 64-bit value
-     * @see <a href="https://en.wikipedia.org/wiki/MurmurHash#Algorithm">MurmurHash Algorithm on Wikipedia</a>
-     */
-//    @Contract(pure = true)
     private static long fmix64(long k) {
         k ^= k >>> 33;
         k *= 0xff51afd7ed558ccdL;
@@ -166,18 +123,6 @@ final class MurmurHash3 {
         return k;
     }
 
-    /**
-     * Reads a 32-bit little-endian integer from the byte array at the specified offset.
-     * <p>
-     * This helper method extracts four consecutive bytes and combines them into a
-     * single integer using little-endian byte order.
-     * </p>
-     *
-     * @param bytes  the byte array to read from
-     * @param offset the starting index in the byte array (must have at least 4 bytes from offset)
-     * @return the 32-bit integer value read in little-endian order
-     */
-//    @Contract(pure = true)
     private static int getInt(final byte[] bytes, final int offset) {
         return (bytes[offset] & 0xff) |
                 ((bytes[offset + 1] & 0xff) << 8) |

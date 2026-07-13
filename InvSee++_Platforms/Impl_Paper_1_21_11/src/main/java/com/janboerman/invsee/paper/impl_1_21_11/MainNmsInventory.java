@@ -26,8 +26,8 @@ class MainNmsInventory extends AbstractNmsInventory<PlayerInventorySlot, MainBuk
 
 	protected Ref<ItemStack> onCursor;
 	protected List<ItemStack> craftingContents;
-	protected List<ItemStack> personalContents;  //crafting, anvil, smithing, grindstone, stone cutter, loom, merchant, enchanting
-	
+	protected List<ItemStack> personalContents;
+
 	protected MainNmsInventory(Player target, CreationOptions<PlayerInventorySlot> creationOptions) {
 		super(target.getUUID(), target.getScoreboardName(), creationOptions);
 		Inventory inv = target.getInventory();
@@ -36,7 +36,7 @@ class MainNmsInventory extends AbstractNmsInventory<PlayerInventorySlot, MainBuk
 			@Override public void set(ItemStack item) { target.containerMenu.setCarried(item); }
 			@Override public ItemStack get() { return target.containerMenu.getCarried(); }
 		};
-		this.personalContents = this.craftingContents = target.inventoryMenu.getCraftSlots().getContents(); //luckily getContents() does not copy (in contrast to getItems() which uses List.copyOf(this.items) !!!)
+		this.personalContents = this.craftingContents = target.inventoryMenu.getCraftSlots().getContents();
         this.maxStack = inv.getMaxStackSize();
 	}
 
@@ -50,7 +50,6 @@ class MainNmsInventory extends AbstractNmsInventory<PlayerInventorySlot, MainBuk
 		this.maxStack = size;
 	}
 
-	//vanilla
 	@Override
 	public int getMaxStackSize() {
 		return maxStack;
@@ -70,7 +69,7 @@ class MainNmsInventory extends AbstractNmsInventory<PlayerInventorySlot, MainBuk
 		this.personalContents = from.personalContents;
 		setChanged();
 	}
-	
+
 	private Ref<ItemStack> decideWhichItem(int slot) {
 		if (0 <= slot && slot < nmsPlayerInventory.getContainerSize()) {
 			return new Ref<>() {
@@ -78,22 +77,21 @@ class MainNmsInventory extends AbstractNmsInventory<PlayerInventorySlot, MainBuk
 				@Override public ItemStack get() { return nmsPlayerInventory.getItem(slot); }
 			};
 		}
-		
+
 		if (nmsPlayerInventory.getContainerSize() == slot) {
 			return onCursor;
 		}
-		
+
 		if (45 <= slot && slot < 54) {
 			int idx = slot - 45;
 			if (idx < personalContents.size()) {
 				return Ref.ofList(idx,  personalContents);
 			}
 		}
-		
+
 		return null;
 	}
 
-	//vanilla
 	@Override
 	public void clearContent() {
 		nmsPlayerInventory.clearContent();
@@ -104,31 +102,27 @@ class MainNmsInventory extends AbstractNmsInventory<PlayerInventorySlot, MainBuk
 		}
 	}
 
-	//vanilla
 	@Override
 	public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player viewer) {
 		return new MainNmsContainer(containerId, this, playerInventory, viewer, creationOptions);
 	}
 
-	//vanilla
 	@Override
 	public Component getDisplayName() {
-		//return new TextComponent("minecraft:generic_9x6");
+
 		return CraftChatMessage.fromStringOrNull(creationOptions.getTitle().titleFor(Target.byGameProfile(targetPlayerUuid, targetPlayerName)));
 	}
 
-	//vanilla
 	@Override
 	public int getContainerSize() {
 		return 54;
 	}
 
-	//craftbukkit
 	@Override
 	public List<ItemStack> getContents() {
-		List<ItemStack> paddingOne = NonNullList.withSize(45 - nmsPlayerInventory.getContainerSize() - 1/*cursor*/, ItemStack.EMPTY);
+		List<ItemStack> paddingOne = NonNullList.withSize(45 - nmsPlayerInventory.getContainerSize() - 1, ItemStack.EMPTY);
 		List<ItemStack> paddingTwo = NonNullList.withSize(9 - personalContents.size(), ItemStack.EMPTY);
-		
+
 		return new ConcatList<>(nmsPlayerInventory.getContents(),
 				new ConcatList<>(new SingletonList<>(onCursor),
 						new ConcatList<>(paddingOne,
@@ -136,16 +130,14 @@ class MainNmsInventory extends AbstractNmsInventory<PlayerInventorySlot, MainBuk
 										paddingTwo))));
 	}
 
-	//vanilla
 	@Override
 	public ItemStack getItem(int slot) {
 		var ref = decideWhichItem(slot);
 		if (ref == null) return ItemStack.EMPTY;
-		
+
 		return ref.get();
 	}
 
-	//vanilla
 	@Override
 	public boolean isEmpty() {
 		if (!nmsPlayerInventory.isEmpty()) return false;
@@ -155,28 +147,25 @@ class MainNmsInventory extends AbstractNmsInventory<PlayerInventorySlot, MainBuk
 		}
 
 		if (!onCursor.get().isEmpty()) return false;
-		
+
 		return true;
 	}
 
-	//craftbukkit
 	@Override
 	public void onClose(CraftHumanEntity bukkitPlayer) {
 		super.onClose(bukkitPlayer);
 	}
 
-	//craftbukkit
 	@Override
 	public void onOpen(CraftHumanEntity bukkitPlayer) {
 		super.onOpen(bukkitPlayer);
 	}
 
-	//vanilla
 	@Override
 	public ItemStack removeItem(int slot, int amount) {
 		var ref = decideWhichItem(slot);
 		if (ref == null) return ItemStack.EMPTY;
-		
+
 		ItemStack stack = ref.get();
 		if (!stack.isEmpty() && amount > 0) {
 			ItemStack oldStackCopy = ref.get().split(amount);
@@ -189,12 +178,11 @@ class MainNmsInventory extends AbstractNmsInventory<PlayerInventorySlot, MainBuk
 		}
 	}
 
-	//vanilla
 	@Override
 	public ItemStack removeItemNoUpdate(int slot) {
 		var ref = decideWhichItem(slot);
 		if (ref == null) return ItemStack.EMPTY;
-		
+
 		ItemStack stack = ref.get();
 		if (stack.isEmpty()) {
 			return ItemStack.EMPTY;
@@ -204,27 +192,24 @@ class MainNmsInventory extends AbstractNmsInventory<PlayerInventorySlot, MainBuk
 		}
 	}
 
-	//vanilla
 	@Override
 	public void setChanged() {
-		//nothing to do here?
+
 	}
 
-	//vanilla
 	@Override
 	public void setItem(int slot, ItemStack stack) {
 		var ref = decideWhichItem(slot);
 		if (ref == null) return;
-		
+
 		ref.set(stack);
 		if (!stack.isEmpty() && stack.getCount() > getMaxStackSize()) {
 			stack.setCount(getMaxStackSize());
 		}
-		
+
 		setChanged();
 	}
 
-	//vanilla
 	@Override
 	public boolean stillValid(Player player) {
 		return true;

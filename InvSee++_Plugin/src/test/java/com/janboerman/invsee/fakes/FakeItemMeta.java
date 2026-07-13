@@ -129,7 +129,7 @@ public class FakeItemMeta implements ItemMeta, Damageable {
 
     @Override
     public int getCustomModelData() {
-        if (customModelData == null) return -1; //i don't know.
+        if (customModelData == null) return -1;
         return customModelData.intValue();
     }
 
@@ -380,8 +380,6 @@ public class FakeItemMeta implements ItemMeta, Damageable {
         if (customModelData != null)    map.put("custom-model-data", customModelData);
         if (unbreakable)                map.put("unbreakable", true);
         if (damage != 0)                map.put("damage", damage);
-        //TODO persistent data.
-        //TODO if I really want to do this properly, then I should depend on an NBT library.
 
         return map;
     }
@@ -399,7 +397,6 @@ public class FakeItemMeta implements ItemMeta, Damageable {
         Object customModelData = map.get("custom-model-data"); if (customModelData instanceof Integer) fakeItemMeta.customModelData = (Integer) customModelData;
         Object unbreakable = map.get("unbreakable"); if (unbreakable instanceof Boolean) fakeItemMeta.unbreakable = (Boolean) unbreakable;
         Object damage = map.get("damage"); if (damage instanceof Integer) fakeItemMeta.damage = (Integer) damage;
-        //TODO persistent data
 
         return fakeItemMeta;
     }
@@ -408,15 +405,15 @@ public class FakeItemMeta implements ItemMeta, Damageable {
     public FakeItemMeta clone() {
         FakeItemMeta result = new FakeItemMeta();
         result.displayName = displayName;
-        result.attributes = attributes;     //TODO deepcopy
-        result.lore = lore;                 //TODO deepcopy
-        result.flags = flags;               //TODO deepcopy
-        result.enchants = enchants;         //TODO deepcopy
+        result.attributes = attributes;
+        result.lore = lore;
+        result.flags = flags;
+        result.enchants = enchants;
         result.localizedName = localizedName;
         result.customModelData = customModelData;
         result.unbreakable = unbreakable;
         result.version = version;
-        result.persistentData = persistentData; //TODO deepcopy
+        result.persistentData = persistentData;
         result.damage = damage;
 
         return result;

@@ -30,16 +30,6 @@ import java.util.stream.Stream;
 
 public interface InvseePlatform {
 
-    //fields that are used by current InvseeImpl implementations can remain there for now. As a first step we can factor out the platform-specific creation methods!
-    //problem is that Impl_1_8_R3 does reset the default Mirror (because Minecraft 1.8.8 doesn't have the offhand slot),
-    //so I still think we do want to retain the ability to override default values for CreationOptions.
-
-    //we do want to dependency-inject the Scheduler, I think. Or should we just pass the Scheduler as a parameter of every method that returns a CompletableFuture?
-    //I might like the latter approach better.
-
-
-    // main inventory spectator methods
-
     public abstract MainSpectatorInventory spectateInventory(HumanEntity target, CreationOptions<PlayerInventorySlot> options);
 
     public abstract CompletableFuture<SpectateResponse<MainSpectatorInventory>> createOfflineInventory(UUID playerId, String playerName, CreationOptions<PlayerInventorySlot> options);
@@ -47,8 +37,6 @@ public interface InvseePlatform {
     public abstract CompletableFuture<SaveResponse> saveInventory(MainSpectatorInventory inventory);
 
     public OpenResponse<MainSpectatorInventoryView> openMainSpectatorInventory(Player spectator, MainSpectatorInventory spectatorInventory, CreationOptions<PlayerInventorySlot> options);
-
-    // ender chest spectator methods
 
     public abstract EnderSpectatorInventory spectateEnderChest(HumanEntity target, CreationOptions<EnderChestSlot> options);
 
@@ -62,9 +50,6 @@ public interface InvseePlatform {
         return PlaceholderPalette.empty();
     }
 
-
-    // default creation options
-
     public default CreationOptions<PlayerInventorySlot> defaultInventoryCreationOptions(Plugin plugin) {
         return CreationOptions.of(plugin, Title.defaultMainInventory(), true, Mirror.defaultPlayerInventory(), true, false, LogOptions
                 .of(LogGranularity.LOG_ON_CLOSE, Collections.singleton(LogTarget.PLUGIN_LOG_FILE), LogOptions.defaultLogFormats()), PlaceholderPalette.empty());
@@ -75,9 +60,6 @@ public interface InvseePlatform {
                 .of(LogGranularity.LOG_ON_CLOSE, Collections.singleton(LogTarget.PLUGIN_LOG_FILE), LogOptions.defaultLogFormats()), PlaceholderPalette.empty());
     }
 
-
-    // Paper wants us to move away from Material.values() https://discord.com/channels/289587909051416579/1077385604012179486/1263418959554805843
-    /** Get a stream of item materials known to the server. */
     public default Stream<Material> materials() {
         return Arrays.stream(Material.values());
     }

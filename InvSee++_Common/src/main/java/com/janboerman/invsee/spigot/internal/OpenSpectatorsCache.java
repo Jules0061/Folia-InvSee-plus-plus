@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.WeakHashMap;
 
-public class OpenSpectatorsCache /*TODO implement some kind of Cache interface that is api-public?*/ {
+public class OpenSpectatorsCache  {
 
     private Map<UUID, WeakReference<MainSpectatorInventory>> openInventories = Collections.synchronizedMap(new WeakHashMap<>());
     private Map<UUID, WeakReference<EnderSpectatorInventory>> openEnderChests = Collections.synchronizedMap(new WeakHashMap<>());
@@ -20,7 +20,7 @@ public class OpenSpectatorsCache /*TODO implement some kind of Cache interface t
 
     public void cache(MainSpectatorInventory spectatorInventory, boolean force) {
         WeakReference<MainSpectatorInventory> ref;
-        MainSpectatorInventory oldSpectatorInv; //might want to return this.
+        MainSpectatorInventory oldSpectatorInv;
         if (force || (ref = openInventories.get(spectatorInventory.getSpectatedPlayerId())) == null || (oldSpectatorInv = ref.get()) == null) {
             openInventories.put(spectatorInventory.getSpectatedPlayerId(), new WeakReference<>(spectatorInventory));
         }
@@ -32,7 +32,7 @@ public class OpenSpectatorsCache /*TODO implement some kind of Cache interface t
 
     public void cache(EnderSpectatorInventory spectatorInventory, boolean force) {
         WeakReference<EnderSpectatorInventory> ref;
-        EnderSpectatorInventory oldSpectatorInv; //might want to return this.
+        EnderSpectatorInventory oldSpectatorInv;
         if (force || (ref = openEnderChests.get(spectatorInventory.getSpectatedPlayerId())) == null || (oldSpectatorInv = ref.get()) == null) {
             openEnderChests.put(spectatorInventory.getSpectatedPlayerId(), new WeakReference<>(spectatorInventory));
         }
@@ -41,12 +41,12 @@ public class OpenSpectatorsCache /*TODO implement some kind of Cache interface t
     public MainSpectatorInventory getMainSpectatorInventory(UUID targetPlayerId) {
         WeakReference<MainSpectatorInventory> ref = openInventories.get(targetPlayerId);
         if (ref == null) return null;
-        return ref.get(); //can still return null
+        return ref.get();
     }
 
     public EnderSpectatorInventory getEnderSpectatorInventory(UUID targetPlayerId) {
         WeakReference<EnderSpectatorInventory> ref = openEnderChests.get(targetPlayerId);
         if (ref == null) return null;
-        return ref.get(); //can still return null
+        return ref.get();
     }
 }

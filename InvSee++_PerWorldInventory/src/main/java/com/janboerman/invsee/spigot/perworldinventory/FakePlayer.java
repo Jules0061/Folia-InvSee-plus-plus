@@ -805,12 +805,12 @@ public class FakePlayer implements Player {
 
     @Override
     public void saveData() {
-        //do the PlayerProfile lookup thing?? I think that is not necessary though.
+
     }
 
     @Override
     public void loadData() {
-        //do the PlayerProfile lookup thing?? I think that is not necessary though.
+
     }
 
     @Override
@@ -1422,7 +1422,7 @@ public class FakePlayer implements Player {
     @Nullable
     @Override
     public Firework fireworkBoost(@NotNull ItemStack itemStack) {
-        //correct by signature, but a real server would never return null for a legit firework item stack.
+
         return null;
     }
 
@@ -1440,7 +1440,7 @@ public class FakePlayer implements Player {
     public int getUnsaturatedRegenRate() {
         return unsaturatedRegenerationRate;
     }
-    
+
     @Override
     public void setSaturatedRegenRate(int rate) {
         this.saturatedRegenerationRate = rate;
@@ -1585,7 +1585,7 @@ public class FakePlayer implements Player {
     @NotNull
     @Override
     public Map<String, Object> serialize() {
-        return Collections.emptyMap(); //can't be bothered to implement this properly. ¯\_(ツ)_/¯
+        return Collections.emptyMap();
     }
 
     @NotNull
@@ -1636,7 +1636,7 @@ public class FakePlayer implements Player {
             @NotNull
             @Override
             public Inventory getTopInventory() {
-                return FakePlayer.this.getInventory(); //crafting slots?!
+                return FakePlayer.this.getInventory();
             }
 
             @NotNull
@@ -1889,7 +1889,7 @@ public class FakePlayer implements Player {
 
     @Override
     public double getEyeHeight() {
-        //not sure whether this is correct but whatever!
+
         if (isSneaking()) {
             return 1.3;
         } else if (isSwimming() || isGliding()) {
@@ -1903,7 +1903,7 @@ public class FakePlayer implements Player {
         if (b) {
             return getEyeHeight();
         } else {
-            return 1.5; //not sure!
+            return 1.5;
         }
     }
 
@@ -1968,7 +1968,7 @@ public class FakePlayer implements Player {
 
     @Override
     public int getMaximumAir() {
-        if (maximumAir == null) maximumAir = 20; //is this correct?
+        if (maximumAir == null) maximumAir = 20;
         return maximumAir;
     }
 

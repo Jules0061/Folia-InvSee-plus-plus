@@ -211,7 +211,7 @@ public class FakeItemFactory implements ItemFactory {
                 case BARREL:
                 case HOPPER:
                 case LECTERN:
-                case SHULKER_BOX:   //not sure if the un-dyed shulkerbox is included in the SHULKER_BOXES tag.
+                case SHULKER_BOX:
                 case JUKEBOX:
                     return true;
             }
@@ -275,11 +275,10 @@ public class FakeItemFactory implements ItemFactory {
         } else if (itemMeta instanceof SuspiciousStewMeta) {
             return material == Material.SUSPICIOUS_STEW;
         } else if (itemMeta instanceof TropicalFishBucketMeta) {
-            //does not apply for cod, salmon, pufferfish.
+
             return material == Material.TROPICAL_FISH_BUCKET;
         }
 
-        //standard ItemMeta always applies
         return true;
     }
 
@@ -308,7 +307,7 @@ public class FakeItemFactory implements ItemFactory {
 
     @Override
     public @NotNull ItemStack createItemStack(@NotNull String s) throws IllegalArgumentException {
-        throw new UnsupportedOperationException(); //this is probably dual of ItemMeta#getAsString()
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -318,7 +317,7 @@ public class FakeItemFactory implements ItemFactory {
 
     @Override
     public @NotNull ItemStack enchantWithLevels(@NotNull ItemStack itemStack, @Range(from = 1L, to = 30L) int i, boolean b, @NotNull Random random) {
-        throw new UnsupportedOperationException(); //TODO could probably implement this, right?
+        throw new UnsupportedOperationException();
     }
 
     @Override

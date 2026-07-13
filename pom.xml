@@ -10,63 +10,14 @@
         <module>Mojang_API</module>
         <module>FastStats</module>
         <module>InvSee++_Common</module>
-        <module>InvSee++_Platforms/Impl_1_8_8_R3</module>
-        <module>InvSee++_Platforms/Impl_1_12_2_R1</module>
-        <module>InvSee++_Platforms/Impl_1_16_5_R3</module>
-        <module>InvSee++_Platforms/Impl_1_17_1_R1</module>
-        <module>InvSee++_Platforms/Impl_1_18_2_R2</module>
-        <module>InvSee++_Platforms/Impl_1_19_4_R3</module>
-        <module>InvSee++_Platforms/Impl_1_20_1_R1</module>
-        <module>InvSee++_Platforms/Impl_1_20_4_R3</module>
-        <module>InvSee++_Platforms/Impl_1_20_6_R4</module>
-        <module>InvSee++_Platforms/Impl_1_21_R1</module>
-        <module>InvSee++_Platforms/Impl_1_21_1_R1</module>
-        <module>InvSee++_Platforms/Impl_1_21_4_R3</module>
-        <module>InvSee++_Platforms/Impl_1_21_5_R4</module>
-        <module>InvSee++_Platforms/Impl_1_21_7_R5</module>
-        <module>InvSee++_Platforms/Impl_1_21_9_R6</module>
-        <module>InvSee++_Platforms/Impl_1_21_11_R7</module>
         <module>InvSee++_Platforms/Impl_Paper_1_21_11</module>
-        <module>InvSee++_Platforms/Impl_26_1_1</module>
-        <module>InvSee++_Platforms/Impl_26_2</module>
-        <module>InvSee++_Platforms/Impl_Paper_26_1_2</module>
-        <module>InvSee++_Platforms/Impl_Paper_26_2</module>
-        <module>InvSee++_Platforms/Impl_Glowstone</module>
-        <module>InvSee++_MultiverseInventories</module> <!-- TODO finish this module -->
         <module>InvSee++_PerWorldInventory</module>
         <module>InvSee++_Plugin</module>
-        <module>InvSee++_Give_Common</module>
-        <module>InvSee++_Give_Platforms/Give_Impl_1_8_8_R3</module>
-        <module>InvSee++_Give_Platforms/Give_Impl_1_12_2_R1</module>
-        <module>InvSee++_Give_Platforms/Give_Impl_1_16_5_R3</module>
-        <module>InvSee++_Give_Platforms/Give_Impl_1_17_1_R1</module>
-        <module>InvSee++_Give_Platforms/Give_Impl_1_18_2_R2</module>
-        <module>InvSee++_Give_Platforms/Give_Impl_1_19_4_R3</module>
-        <module>InvSee++_Give_Platforms/Give_Impl_1_20_1_R1</module>
-        <module>InvSee++_Give_Platforms/Give_Impl_1_20_4_R3</module>
-        <module>InvSee++_Give_Platforms/Give_Impl_1_20_6_R4</module>
-        <module>InvSee++_Give_Platforms/Give_Impl_1_21_R1</module>
-        <module>InvSee++_Give_Platforms/Give_Impl_1_21_1_R1</module>
-        <module>InvSee++_Give_Platforms/Give_Impl_1_21_4_R3</module>
-        <module>InvSee++_Give_Platforms/Give_Impl_1_21_5_R4</module>
-        <module>InvSee++_Give_Platforms/Give_Impl_1_21_7_R5</module>
-        <module>InvSee++_Give_Platforms/Give_Impl_1_21_9_R6</module>
-        <module>InvSee++_Give_Platforms/Give_Impl_1_21_11_R7</module>
-        <module>InvSee++_Give_Platforms/Give_Impl_Paper_1_21_11</module>
-        <module>InvSee++_Give_Platforms/Give_Impl_26_1_1</module>
-        <module>InvSee++_Give_Platforms/Give_Impl_26_2</module>
-        <module>InvSee++_Give_Platforms/Give_Impl_Paper_26_1_2</module>
-        <module>InvSee++_Give_Platforms/Give_Impl_Paper_26_2</module>
-        <module>InvSee++_Give_Platforms/Give_Impl_Glowstone</module>
-        <module>InvSee++_Give_Plugin</module>
-        <module>InvSee++_Clear_Plugin</module>
-        <module>InvSee++_Clone_Plugin</module>
-        <module>InvSee++_Test_Plugin</module>
     </modules>
     <packaging>pom</packaging>
 
     <name>InvSee++</name>
-    <description>A plugin to view and manipulate players' inventories.</description>
+    <description>A plugin to view and manipulate players' inventories. Folia-optimized fork for Minecraft 1.21.11.</description>
 
     <scm>
         <developerConnection>scm:git:ssh://git@github.com/Jannyboy11/InvSee-plus-plus.git</developerConnection>

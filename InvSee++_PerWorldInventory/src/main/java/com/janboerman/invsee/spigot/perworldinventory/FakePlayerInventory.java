@@ -127,7 +127,6 @@ public class FakePlayerInventory extends FakeInventory implements PlayerInventor
         return items[37];
     }
 
-
     @Override
     public void setLeggings(@Nullable ItemStack itemStack) {
         items[37] = itemStack;
@@ -182,7 +181,7 @@ public class FakePlayerInventory extends FakeInventory implements PlayerInventor
             case OFF_HAND: return getItemInOffHand();
             case HAND: return getItemInMainHand();
         }
-        return null; //can't use switch expressions yet in Java 11 :/
+        return null;
     }
 
     @Override

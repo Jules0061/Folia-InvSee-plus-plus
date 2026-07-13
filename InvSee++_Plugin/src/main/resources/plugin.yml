@@ -1,13 +1,13 @@
 name: InvSeePlusPlus
 main: com.janboerman.invsee.spigot.InvseePlusPlus
-author: Jannyboy11
+authors: [Jannyboy11, Jules (Forked it)]
 version: ${project.version}
 description: ${project.description}
-api-version: 1.16
+api-version: '1.21'
 website: "https://github.com/Jannyboy11/InvSee-plus-plus/"
 prefix: "InvSee++"
 softdepend: [Vault, PerWorldInventory, Multiverse-Inventories, LuckPerms, GroupManager, BungeePerms, UltraPermissions]
-folia-supported: false
+folia-supported: true
 
 commands:
   invsee:

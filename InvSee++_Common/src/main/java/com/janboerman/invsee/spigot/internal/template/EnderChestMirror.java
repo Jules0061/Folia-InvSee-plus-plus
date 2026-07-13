@@ -25,7 +25,6 @@ public class EnderChestMirror implements Mirror<EnderChestSlot> {
     private EnderChestSlot[] slots;
     private Map<EnderChestSlot, Integer> indices;
 
-    /** @deprecated Use {@link #ofTemplate(String)} instead. */
     @Deprecated
     public EnderChestMirror(String template) {
 
@@ -64,7 +63,6 @@ public class EnderChestMirror implements Mirror<EnderChestSlot> {
         return slots[index];
     }
 
-    //for testing purposes
     public EnderChestSlot[] getSlots() {
         return Arrays.copyOf(slots, slots.length);
     }
@@ -75,9 +73,6 @@ public class EnderChestMirror implements Mirror<EnderChestSlot> {
         for (EnderChestSlot slot : slots) sj.add(slot.toString());
         return sj.toString();
     }
-
-
-    // Mirror -> template
 
     public static String toTemplate(Mirror<EnderChestSlot> mirror) {
         StringBuilder stringBuilder = new StringBuilder();

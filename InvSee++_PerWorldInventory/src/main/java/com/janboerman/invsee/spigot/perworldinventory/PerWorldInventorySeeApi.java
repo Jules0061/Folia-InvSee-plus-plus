@@ -61,8 +61,6 @@ public class PerWorldInventorySeeApi extends InvseeAPI implements InvseePlatform
     private final InvseePlatform wrapped;
     private final PerWorldInventoryHook pwiHook;
 
-    //there can be more than one open spectator inventories per target player.
-    //use the superclass openInventory-mechanic only for profile-unspecific spectator inventories
     private final Map<ProfileKey, MainSpectatorInventory> inventories = new HashMap<>();
     private final Map<MainSpectatorInventory, ProfileKey> inventoryKeys = new HashMap<>();
     private final Map<ProfileKey, EnderSpectatorInventory> enderchests = new HashMap<>();
@@ -85,31 +83,20 @@ public class PerWorldInventorySeeApi extends InvseeAPI implements InvseePlatform
         this.cache = Objects.requireNonNull(cachedInventories);
         this.scheduler = Objects.requireNonNull(scheduler);
 
-        //these influence the PlayerListener
         setMainInventoryTransferPredicate((spectatorInventory, player) -> {
             if (!pwiHook.pwiManagedInventories()) return true;
 
-            // a player logs in and his inventory was being edited by somebody.
-            // do we transfer the contents from the spectator to the live player?
-            // only if the inventories share the same group!
-
             ProfileKey profileKey = inventoryKeys.get(spectatorInventory);
-            if (profileKey == null) return true; //not tied to a profile, so just transfer
+            if (profileKey == null) return true;
 
-            //check whether world and gamemode match
             return pwiHook.isMatchedByProfile(player, profileKey);
         });
         setEnderChestTransferPredicate((spectatorInventory, player) -> {
             if (!pwiHook.pwiManagedEnderChests()) return true;
 
-            // a player logs in and his enderchest was being edited by somebody.
-            // do we transfer the contents from the spectator to the live player?
-            // only if the enderchests share the same group!
-
             ProfileKey profileKey = enderchestKeys.get(spectatorInventory);
-            if (profileKey == null) return true; //not tied to a profile, so just transfer
+            if (profileKey == null) return true;
 
-            //check whether world and gamemode match
             return pwiHook.isMatchedByProfile(player, profileKey);
         });
     }
@@ -142,7 +129,6 @@ public class PerWorldInventorySeeApi extends InvseeAPI implements InvseePlatform
 
         @EventHandler
         public void onTargetQuit(PlayerQuitEvent event) {
-            //remove from maps if nobody is watching.
 
             Player player = event.getPlayer();
             ProfileKey key = pwiHook.getActiveProfileKey(player);
@@ -172,7 +158,7 @@ public class PerWorldInventorySeeApi extends InvseeAPI implements InvseePlatform
                 ProfileKey key = inventoryKeys.get(main);
                 if (key != null) {
                     scheduler.executeLaterGlobal(() -> {
-                        //remove from maps if nobody is watching
+
                         if (main.getViewers().isEmpty()) {
                             inventories.remove(key, main);
                             inventoryKeys.remove(main, key);
@@ -185,7 +171,7 @@ public class PerWorldInventorySeeApi extends InvseeAPI implements InvseePlatform
                 ProfileKey key = enderchestKeys.get(ender);
                 if (key != null) {
                     scheduler.executeLaterGlobal(() -> {
-                        //remove from maps if nobody is watching
+
                         if (ender.getViewers().isEmpty()) {
                             enderchests.remove(key, ender);
                             enderchestKeys.remove(ender, key);
@@ -251,20 +237,14 @@ public class PerWorldInventorySeeApi extends InvseeAPI implements InvseePlatform
             }
         }
 
-        //can't use InventoryLoadEvent because I can't get the old profile key from it!
-
         private void giveSnapshotInventoryToSpectators(ProfileKey oldProfileKey) {
-            //new data is about to be loaded onto the player
-
-            //  if there are 'live' spectator inventories for the player, then
-            //      take a snapshot of the inventory, and 're-open' for all viewers
 
             MainSpectatorInventory mainSpectator = inventories.get(oldProfileKey);
             EnderSpectatorInventory enderSpectator = enderchests.get(oldProfileKey);
 
             if (mainSpectator != null) {
-                List<HumanEntity> viewers = new ArrayList<>(mainSpectator.getViewers());   //copy
-                ItemStack[] contents = mainSpectator.getContents();                        //already is a copy
+                List<HumanEntity> viewers = new ArrayList<>(mainSpectator.getViewers());
+                ItemStack[] contents = mainSpectator.getContents();
 
                 viewers.forEach(HumanEntity::closeInventory);
 
@@ -274,12 +254,12 @@ public class PerWorldInventorySeeApi extends InvseeAPI implements InvseePlatform
                     inventoryKeys.put(newSpectatorInventory, oldProfileKey);
                     newSpectatorInventory.setContents(contents);
                     viewers.forEach(v -> v.openInventory(newSpectatorInventory));
-                }, /*orElse part*/ () -> inventories.remove(oldProfileKey)));
+                },  () -> inventories.remove(oldProfileKey)));
             }
 
             if (enderSpectator != null) {
-                List<HumanEntity> viewers = new ArrayList<>(enderSpectator.getViewers());   //copy
-                ItemStack[] contents = enderSpectator.getContents();                        //already is a copy
+                List<HumanEntity> viewers = new ArrayList<>(enderSpectator.getViewers());
+                ItemStack[] contents = enderSpectator.getContents();
 
                 CompletableFuture<Optional<EnderSpectatorInventory>> snapshotFuture = asSnapShotInventory(enderSpectator);
                 snapshotFuture.thenAccept(optional -> ifPresentOrElse(optional, newSpectatorInventory -> {
@@ -287,10 +267,9 @@ public class PerWorldInventorySeeApi extends InvseeAPI implements InvseePlatform
                     enderchestKeys.put(newSpectatorInventory, oldProfileKey);
                     newSpectatorInventory.setContents(contents);
                     viewers.forEach(v -> v.openInventory(newSpectatorInventory));
-                }, /*orElse part*/ () -> enderchests.remove(oldProfileKey)));
+                },  () -> enderchests.remove(oldProfileKey)));
             }
         }
-
 
         @EventHandler
         public void onPwiLoadComplete(InventoryLoadCompleteEvent event) {
@@ -299,49 +278,44 @@ public class PerWorldInventorySeeApi extends InvseeAPI implements InvseePlatform
         }
 
         private void giveLiveInventoryToSpectators(ProfileKey newProfileKey) {
-            //new inventory contents was loaded onto the player.
-
-            //  if there is an open spectator inventory for the new profile, then
-            //      close the spectator inventory for all viewers
-            //      re-open a live spectator inventory, tied to the same profile key
 
             MainSpectatorInventory mainSpectator = inventories.get(newProfileKey);
             EnderSpectatorInventory enderSpectator = enderchests.get(newProfileKey);
 
             if (mainSpectator != null) {
 
-                List<HumanEntity> viewers = new ArrayList<>(mainSpectator.getViewers());    //copy
-                ItemStack[] contents = mainSpectator.getContents();                         //already is a copy
+                List<HumanEntity> viewers = new ArrayList<>(mainSpectator.getViewers());
+                ItemStack[] contents = mainSpectator.getContents();
                 viewers.forEach(HumanEntity::closeInventory);
 
                 Executor executor = runnable -> scheduler.executeSyncPlayer(newProfileKey.getUuid(), runnable, null);
                 executor.execute(() -> {
-                    //run in the next tick to ensure that the player has changed worlds and the live inventory is actually really live
+
                     Optional<MainSpectatorInventory> liveFuture = asLiveInventory(mainSpectator, false);
                     ifPresentOrElse(liveFuture, liveSpectator -> {
                         inventories.put(newProfileKey, liveSpectator);
                         inventoryKeys.put(liveSpectator, newProfileKey);
-                        liveSpectator.setContents(contents);    //updates the player's inventory!
+                        liveSpectator.setContents(contents);
                         viewers.forEach(v -> v.openInventory(liveSpectator));
-                    }, /*orElse part*/ () -> inventories.remove(newProfileKey));
+                    },  () -> inventories.remove(newProfileKey));
                 });
             }
 
             if (enderSpectator != null) {
-                List<HumanEntity> viewers = new ArrayList<>(enderSpectator.getViewers());    //copy
-                ItemStack[] contents = enderSpectator.getContents();                         //already is a copy
+                List<HumanEntity> viewers = new ArrayList<>(enderSpectator.getViewers());
+                ItemStack[] contents = enderSpectator.getContents();
                 viewers.forEach(HumanEntity::closeInventory);
 
                 Executor executor = runnable -> scheduler.executeSyncPlayer(newProfileKey.getUuid(), runnable, null);
                 executor.execute(() -> {
-                    //run in the next tick to ensure that the player has changed worlds and the live inventory is actually really live
+
                     Optional<EnderSpectatorInventory> liveFuture = asLiveInventory(enderSpectator, false);
                     ifPresentOrElse(liveFuture, liveSpectator -> {
                         enderchests.put(newProfileKey, liveSpectator);
                         enderchestKeys.put(liveSpectator, newProfileKey);
                         liveSpectator.setContents(contents);
                         viewers.forEach(v -> v.openInventory(liveSpectator));
-                    }, /*orElse part*/ () -> inventories.remove(newProfileKey));
+                    },  () -> inventories.remove(newProfileKey));
                 });
             }
         }
@@ -350,7 +324,7 @@ public class PerWorldInventorySeeApi extends InvseeAPI implements InvseePlatform
     @Override
     public OpenResponse<MainSpectatorInventoryView> openMainSpectatorInventory(Player spectator, MainSpectatorInventory spectatorInventory, CreationOptions<PlayerInventorySlot> options) {
         return wrapped.openMainSpectatorInventory(spectator, spectatorInventory, options);
-    } //TODO overload with ProfileKey?
+    }
 
     @Override
     public MainSpectatorInventory spectateInventory(HumanEntity player, CreationOptions<PlayerInventorySlot> options) {
@@ -358,7 +332,6 @@ public class PerWorldInventorySeeApi extends InvseeAPI implements InvseePlatform
     }
 
     public MainSpectatorInventory spectateInventory(HumanEntity player, CreationOptions<PlayerInventorySlot> options, ProfileKey profileKey) {
-        //return from cache? but that does not guarantee it's live, so for now, don't use the cache.
 
         MainSpectatorInventory spectatorInv = spectateInventory(player, options);
         inventories.put(profileKey, spectatorInv);
@@ -380,7 +353,7 @@ public class PerWorldInventorySeeApi extends InvseeAPI implements InvseePlatform
         Location logoutLocation = pwiHook.getDataSource().getLogout(new FakePlayer(playerId, playerName, plugin.getServer()));
         World world = logoutLocation != null ? logoutLocation.getWorld() : plugin.getServer().getWorlds().get(0);
         Group group = pwiHook.getGroupForWorld(world.getName());
-        ProfileKey profileKey = new ProfileKey(playerId, group, GameMode.SURVIVAL /*I don't really care about creative, do I?*/);
+        ProfileKey profileKey = new ProfileKey(playerId, group, GameMode.SURVIVAL );
         return createOfflineInventory(playerId, playerName, options, profileKey, false);
     }
 
@@ -397,9 +370,9 @@ public class PerWorldInventorySeeApi extends InvseeAPI implements InvseePlatform
 
         if (profileKey == null) {
             saveVanilla = true;
-            profileKey = new ProfileKey(inventory.getSpectatedPlayerId(), pwiHook.getGroupForWorld(logoutWorld.getName()), GameMode.SURVIVAL /*I don't really care about creative, do I?*/);
+            profileKey = new ProfileKey(inventory.getSpectatedPlayerId(), pwiHook.getGroupForWorld(logoutWorld.getName()), GameMode.SURVIVAL );
         } else if (!pwiHook.pwiLoadDataOnJoin() && profileKey.getGroup().containsWorld(logoutWorld.getName())) {
-            //the implementation of Group#containsWorld seems bugged - PWI keeps reporting that it creates groups on the fly!
+
             saveVanilla = true;
         }
 
@@ -409,7 +382,7 @@ public class PerWorldInventorySeeApi extends InvseeAPI implements InvseePlatform
     @Override
     public OpenResponse<EnderSpectatorInventoryView> openEnderSpectatorInventory(Player spectator, EnderSpectatorInventory spectatorInventory, CreationOptions<EnderChestSlot> options) {
         return wrapped.openEnderSpectatorInventory(spectator, spectatorInventory, options);
-    } //TODO overload with ProfileKey?
+    }
 
     @Override
     public EnderSpectatorInventory spectateEnderChest(HumanEntity player, CreationOptions<EnderChestSlot> options) {
@@ -440,7 +413,7 @@ public class PerWorldInventorySeeApi extends InvseeAPI implements InvseePlatform
         Location logoutLocation = pwiHook.getDataSource().getLogout(new FakePlayer(playerId, playerName, plugin.getServer()));
         World world = logoutLocation != null ? logoutLocation.getWorld() : plugin.getServer().getWorlds().get(0);
         Group group = pwiHook.getGroupForWorld(world.getName());
-        ProfileKey profileKey = new ProfileKey(playerId, group, GameMode.SURVIVAL /*I don't really care about creative, do I?*/);
+        ProfileKey profileKey = new ProfileKey(playerId, group, GameMode.SURVIVAL );
         return createOfflineEnderChest(playerId, playerName, options, profileKey, false);
     }
 
@@ -458,9 +431,9 @@ public class PerWorldInventorySeeApi extends InvseeAPI implements InvseePlatform
 
         if (profileKey == null) {
             saveVanilla = true;
-            profileKey = new ProfileKey(enderChest.getSpectatedPlayerId(), pwiHook.getGroupForWorld(logoutWorld.getName()), GameMode.SURVIVAL /*I don't really care about creative, do I?*/);
+            profileKey = new ProfileKey(enderChest.getSpectatedPlayerId(), pwiHook.getGroupForWorld(logoutWorld.getName()), GameMode.SURVIVAL );
         } else if (!pwiHook.pwiLoadDataOnJoin() && profileKey.getGroup().containsWorld(logoutWorld.getName())) {
-            //the implementation of Group#containsWorld seems bugged - PWI keeps reporting that it creates groups on the fly!
+
             saveVanilla = true;
         }
 
@@ -469,7 +442,7 @@ public class PerWorldInventorySeeApi extends InvseeAPI implements InvseePlatform
 
     private CompletableFuture<Boolean> isTargetExempted(ProfileKey profileKey, Target target, BiPredicate<Target, String> isExempted) {
         Set<String> worlds = Compat.setCopy(profileKey.getGroup().getWorlds());
-        // force async for LuckPerms.
+
         Executor executor =  plugin.getServer().getPluginManager().isPluginEnabled("LuckPerms")
                 ? scheduler::executeAsync
                 : target instanceof UniqueIdTarget
@@ -483,20 +456,16 @@ public class PerWorldInventorySeeApi extends InvseeAPI implements InvseePlatform
     }
 
     private CompletableFuture<SpectateResponse<MainSpectatorInventory>> createOfflineInventory(UUID playerId, String playerName, CreationOptions<PlayerInventorySlot> options, ProfileKey profileKey, boolean tieToProfile) {
-        //don't ask the cache because it may contain a live inventory! (and we could get called by asSnapshotInventory!)
 
-        //check whether the player is not exempted.
         final Target target = Target.byGameProfile(playerId, playerName);
         CompletableFuture<Boolean> exempted = isTargetExempted(profileKey, target, exempt::isExemptedFromHavingMainInventorySpectated);
 
-        //try non-managed
         CompletableFuture<SpectateResponse<MainSpectatorInventory>> fromVanillaStorageOfflineInv = exempted.thenCompose(isExempted -> {
             if (isExempted) return CompletableFuture.completedFuture(SpectateResponse.fail(NotCreatedReason.targetHasExemptPermission(target)));
             else return wrapped.createOfflineInventory(playerId, playerName, options);
         });
         if (!pwiHook.pwiManagedInventories()) return fromVanillaStorageOfflineInv;
 
-        //create a fake player for PWI so that we can load data onto it!
         FakePlayer player = new FakePlayer(playerId, playerName, plugin.getServer());
         PlayerInventory playerInv = player.getInventory();
 
@@ -504,31 +473,28 @@ public class PerWorldInventorySeeApi extends InvseeAPI implements InvseePlatform
         Location location = pwiHook.getDataSource().getLogout(player);
         World logoutWorld = location != null ? location.getWorld() : plugin.getServer().getWorlds().get(0);
         if (!pwiHook.pwiLoadDataOnJoin() && profileKey.getGroup().containsWorld(logoutWorld.getName())) {
-            loadFromPWI.set(false); //just load from vanilla.
+            loadFromPWI.set(false);
         }
 
         return fromVanillaStorageOfflineInv.thenApplyAsync(optionalSpectatorInv -> {
 
             optionalSpectatorInv.ifSuccess(spectatorInv -> {
 
-                //first set the minecraft-saved contents onto the player
                 playerInv.setStorageContents(spectatorInv.getStorageContents());
                 playerInv.setArmorContents(spectatorInv.getArmourContents());
                 playerInv.setExtraContents(spectatorInv.getOffHandContents());
                 player.setItemOnCursor(spectatorInv.getCursorContents());
 
                 if (loadFromPWI.get()) {
-                    //load the data from the player onto the profile, or load the profile from persistent storage
+
                     PlayerProfile profile = pwiHook.getOrCreateProfile(player, profileKey);
 
-                    //then set it back from the profile
                     spectatorInv.setStorageContents(Arrays.copyOf(profile.getInventory(), 36));
                     spectatorInv.setArmourContents(Arrays.copyOfRange(profile.getInventory(), 36, 40));
                     spectatorInv.setOffHandContents(Arrays.copyOfRange(profile.getInventory(), 40, 41));
-                    //PlayerProfile has no getter for the item on the cursor!
+
                 }
 
-                //mark inventory as tied to the profile key
                 if (tieToProfile) {
                     inventoryKeys.put(spectatorInv, profileKey);
                     inventories.put(profileKey, spectatorInv);
@@ -540,12 +506,9 @@ public class PerWorldInventorySeeApi extends InvseeAPI implements InvseePlatform
     }
 
     public CompletableFuture<SaveResponse> saveInventory(MainSpectatorInventory inventory, ProfileKey profileKey, boolean saveVanilla) {
-        //if the spectated player is managed by PWI (because its world is managed by PWI)
-        //then also save the inventory to PWI's storage
-        //that can be done by loading the profile, applying the contents from the MainSpectatorInventory and saving it again
 
         if (!pwiHook.pwiManagedInventories()) {
-            //not managed by pwi
+
             return wrapped.saveInventory(inventory);
 
         } else {
@@ -560,7 +523,7 @@ public class PerWorldInventorySeeApi extends InvseeAPI implements InvseePlatform
 
             PlayerProfile profile = pwiHook.getOrCreateProfile(player, profileKey);
 
-            ItemStack[] profileArmour = inventory.getArmourContents(); //should be redundant, but is not due to a flaw in PerWorldInventory's implementation.
+            ItemStack[] profileArmour = inventory.getArmourContents();
             ItemStack[] profileInventory = new ItemStack[41];
             System.arraycopy(inventory.getStorageContents(), 0, profileInventory, 0, 36);
             System.arraycopy(inventory.getArmourContents(), 0, profileInventory, 36, 4);
@@ -606,20 +569,16 @@ public class PerWorldInventorySeeApi extends InvseeAPI implements InvseePlatform
     }
 
     private CompletableFuture<SpectateResponse<EnderSpectatorInventory>> createOfflineEnderChest(UUID playerId, String playerName, CreationOptions<EnderChestSlot> options, ProfileKey profileKey, boolean tieToProfile) {
-        //don't ask the cache because it may contain a live inventory! (and we could get called by asSnapshotInventory!)
 
-        //check whether the player is not exempted.
         final Target target = Target.byGameProfile(playerId, playerName);
         CompletableFuture<Boolean> exempted = isTargetExempted(profileKey, target, exempt::isExemptedFromHavingEnderchestSpectated);
 
-        //try non-managed
         CompletableFuture<SpectateResponse<EnderSpectatorInventory>> nonPwiEnderSpectatorFuture = exempted.thenCompose(isExempted -> {
             if (isExempted) return CompletableFuture.completedFuture(SpectateResponse.fail(NotCreatedReason.targetHasExemptPermission(target)));
             else return wrapped.createOfflineEnderChest(playerId, playerName, options);
         });
         if (!pwiHook.pwiManagedEnderChests()) return nonPwiEnderSpectatorFuture;
 
-        //create a fake player for PWI so that we can load data onto it!
         FakePlayer player = new FakePlayer(playerId, playerName, plugin.getServer());
         Inventory enderInv = player.getEnderChest();
 
@@ -627,23 +586,21 @@ public class PerWorldInventorySeeApi extends InvseeAPI implements InvseePlatform
         Location location = pwiHook.getDataSource().getLogout(player);
         World logoutWorld = location != null ? location.getWorld() : plugin.getServer().getWorlds().get(0);
         if (!pwiHook.pwiLoadDataOnJoin() && profileKey.getGroup().containsWorld(logoutWorld.getName())) {
-            loadFromPWI.set(false); //just load from vanilla.
+            loadFromPWI.set(false);
         }
 
         return nonPwiEnderSpectatorFuture.thenApplyAsync(optionalSpectatorInv -> {
             optionalSpectatorInv.ifSuccess(spectatorInv -> {
-                //first set the minecraft-saved contents onto the fake player
+
                 enderInv.setStorageContents(spectatorInv.getStorageContents());
 
                 if (loadFromPWI.get()) {
-                    //load the data from the player onto the profile, or load the profile from persistent storage
+
                     PlayerProfile profile = pwiHook.getOrCreateProfile(player, profileKey);
 
-                    //then set it back from the profile
                     spectatorInv.setStorageContents(profile.getEnderChest());
                 }
 
-                //mark inventory as tied to the profile key
                 if (tieToProfile) {
                     enderchestKeys.put(spectatorInv, profileKey);
                     enderchests.put(profileKey, spectatorInv);
@@ -655,12 +612,9 @@ public class PerWorldInventorySeeApi extends InvseeAPI implements InvseePlatform
     }
 
     public CompletableFuture<SaveResponse> saveEnderChest(EnderSpectatorInventory enderChest, ProfileKey profileKey, boolean saveVanilla) {
-        //if the spectated player is managed by PWI (because its world is managed by PWI)
-        //then also save the inventory to PWI's storage
-        //that can be done by loading the profile, applying the contents from the EnderSpectatorInventory and saving it again
 
         if (!pwiHook.pwiManagedEnderChests()) {
-            //not managed by pwi
+
             return wrapped.saveEnderChest(enderChest);
         }
 
@@ -718,7 +672,6 @@ public class PerWorldInventorySeeApi extends InvseeAPI implements InvseePlatform
 
         S live = null;
 
-        //TODO can I use ShallowCopy here? probably, yes!
         if (snapshotInventory instanceof MainSpectatorInventory) {
             Mirror<PlayerInventorySlot> mirror = (Mirror<PlayerInventorySlot>) snapshotInventory.getMirror();
             live = (S) spectateInventory(player, title, mirror);
@@ -743,19 +696,15 @@ public class PerWorldInventorySeeApi extends InvseeAPI implements InvseePlatform
         final String name = liveSpectatorInventory.getSpectatedPlayerName();
         final Player player = plugin.getServer().getPlayer(id);
 
-        //if the spectated player is offline, then the inventory wasn't live in the first place.
         if (player == null) {
             return CompletableFuture.completedFuture(Optional.of(liveSpectatorInventory));
         }
 
-        //if live spectator inventory is bound to a profile key AND the player does not match that profile, then the inventory wasn't live in the first place.
         ProfileKey profileKey = inventoryKeys.get(liveSpectatorInventory);
         if (profileKey != null && !pwiHook.isMatchedByProfile(player, profileKey)) {
             return CompletableFuture.completedFuture(Optional.of(liveSpectatorInventory));
         }
 
-        //either the inventory is tied to a profile and the player matches that profile OR the inventory is not tied to a profile.
-        //in the second case we need to make up a new profile key on the fly
         if (profileKey == null) {
             profileKey = pwiHook.getActiveProfileKey(player);
         }
@@ -763,13 +712,11 @@ public class PerWorldInventorySeeApi extends InvseeAPI implements InvseePlatform
         final Target target = Target.byPlayer(player);
         final String title = liveSpectatorInventory.getTitle();
 
-        //can't wait till pattern matching arrives
         if (liveSpectatorInventory instanceof MainSpectatorInventory) {
             MainSpectatorInventory liveSpectator = (MainSpectatorInventory) liveSpectatorInventory;
             Mirror<PlayerInventorySlot> mirror = liveSpectator.getMirror();
             CreationOptions<PlayerInventorySlot> options = CreationOptions.defaultMainInventory().withTitle(title).withMirror(mirror);
 
-            //who needs type safety anyway?
             return (CompletableFuture<Optional<S>>) (Object) createOfflineInventory(id, name, options, profileKey).thenApplyAsync(Function.identity(), runnable -> scheduler.executeSyncPlayer(id, runnable, null));
 
         } else if (liveSpectatorInventory instanceof EnderSpectatorInventory) {
@@ -777,11 +724,9 @@ public class PerWorldInventorySeeApi extends InvseeAPI implements InvseePlatform
             Mirror<EnderChestSlot> mirror = liveSpectator.getMirror();
             CreationOptions<EnderChestSlot> options = CreationOptions.defaultEnderInventory().withTitle(title).withMirror(mirror);
 
-            //who needs type safety anyway?
             return (CompletableFuture<Optional<S>>) (Object) createOfflineEnderChest(id, name, options, profileKey).thenApplyAsync(Function.identity(), runnable -> scheduler.executeSyncPlayer(id, runnable, null));
         }
 
-        //unreachable
         assert false : "Unreachable: liveSpectatorInventory is neither a MainSpectatorInventory nor EnderSpectatorInventory";
         return CompletedEmpty.the();
     }

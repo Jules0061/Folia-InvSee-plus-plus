@@ -628,7 +628,7 @@ public class FakeServer implements Server {
 
     @Override
     public int getMaxChainedNeighborUpdates() {
-        return -1; //negative implies that the value is not used :)
+        return -1;
     }
 
     @Override
@@ -1015,7 +1015,7 @@ public class FakeServer implements Server {
     public boolean isWhitelistEnforced() {
         throw new UnsupportedOperationException();
     }
-    
+
     @Override
     public boolean isResourcePackRequired() {
         throw new UnsupportedOperationException();

@@ -99,13 +99,11 @@ public class InvseeImpl implements InvseePlatform, TestingCompatLayer {
         MainBukkitInventory bukkitInventory = (MainBukkitInventory) inv;
         MainNmsInventory nmsInventory = bukkitInventory.getInventory();
 
-        //this is what the nms does: nmsPlayer.openMenu(nmsWindow);
-        //so let's emulate that!
         int windowId = HybridServerSupport.nextContainerCounter(nmsPlayer);
         Inventory bottom = nmsPlayer.getInventory();
         MainNmsContainer nmsWindow = new MainNmsContainer(windowId, nmsInventory, bottom, nmsPlayer, options);
         nmsWindow.setTitle(CraftChatMessage.fromString(title != null ? title : inv.getTitle())[0]);
-        var eventCancelled = callInventoryOpenEvent(nmsPlayer, nmsWindow); //closes current open inventory if one is already open
+        var eventCancelled = callInventoryOpenEvent(nmsPlayer, nmsWindow);
         if (eventCancelled.isPresent()) {
             return OpenResponse.closed(NotOpenedReason.inventoryOpenEventCancelled(eventCancelled.get()));
         } else {
@@ -114,7 +112,6 @@ public class InvseeImpl implements InvseePlatform, TestingCompatLayer {
             nmsPlayer.initMenu(nmsWindow);
             MainBukkitInventoryView bukkitWindow = nmsWindow.getBukkitView();
 
-            //send placeholders (inaccessible, armour, offhand, cursor, personal)
             Mirror<PlayerInventorySlot> mirror = options.getMirror();
             PlaceholderPalette palette = options.getPlaceholderPalette();
             ItemStack inaccessible = CraftItemStack.asNMSCopy(palette.inaccessible());
@@ -129,7 +126,6 @@ public class InvseeImpl implements InvseePlatform, TestingCompatLayer {
                 Slot slot = nmsWindow.getSlot(rawIndex);
                 if (slot.hasItem()) continue;
 
-                //slot has no item, send placeholder.
                 if (slot instanceof InaccessibleSlot) sendItemChange(nmsPlayer, rawIndex, inaccessible);
                 else if (slot instanceof BootsSlot) sendItemChange(nmsPlayer, rawIndex, CraftItemStack.asNMSCopy(palette.armourBoots()));
                 else if (slot instanceof LeggingsSlot) sendItemChange(nmsPlayer, rawIndex, CraftItemStack.asNMSCopy(palette.armourLeggings()));
@@ -142,7 +138,6 @@ public class InvseeImpl implements InvseePlatform, TestingCompatLayer {
                 else if (slot instanceof PersonalSlot personal) sendItemChange(nmsPlayer, rawIndex, personal.works() ? CraftItemStack.asNMSCopy(palette.generic()) : inaccessible);
             }
 
-            //finally, return
             return OpenResponse.open(bukkitWindow);
         }
     }
@@ -177,13 +172,11 @@ public class InvseeImpl implements InvseePlatform, TestingCompatLayer {
         EnderBukkitInventory bukkitInventory = (EnderBukkitInventory) inv;
         EnderNmsInventory nmsInventory = bukkitInventory.getInventory();
 
-        //this is what the nms does: nmsPlayer.openMenu(nmsWindow);
-        //so let's emulate that!
         int windowId = HybridServerSupport.nextContainerCounter(nmsPlayer);
         Inventory bottom = nmsPlayer.getInventory();
         EnderNmsContainer nmsWindow = new EnderNmsContainer(windowId, nmsInventory, bottom, nmsPlayer, options);
         nmsWindow.setTitle(CraftChatMessage.fromString(title != null ? title : inv.getTitle())[0]);
-        var eventCancelled = callInventoryOpenEvent(nmsPlayer, nmsWindow); //closes current open inventory if one is already open
+        var eventCancelled = callInventoryOpenEvent(nmsPlayer, nmsWindow);
         if (eventCancelled.isPresent()) {
             return OpenResponse.closed(NotOpenedReason.inventoryOpenEventCancelled(eventCancelled.get()));
         } else {
@@ -217,27 +210,27 @@ public class InvseeImpl implements InvseePlatform, TestingCompatLayer {
         CraftServer server = (CraftServer) plugin.getServer();
     	DedicatedPlayerList playerList = server.getHandle();
     	PlayerDataStorage worldNBTStorage = playerList.playerIo;
-    	
+
     	CraftWorld world = (CraftWorld) server.getWorlds().get(0);
     	GameProfile gameProfile = new GameProfile(player, name);
-    	
+
     	FakeEntityHuman fakeEntityHuman = new FakeEntityHuman(
     			world.getHandle(),
     			gameProfile);
-    	
+
     	return CompletableFuture.supplyAsync(() -> {
     		Optional<ValueInput> playerCompound = loadPlayerData(worldNBTStorage, fakeEntityHuman)
                     .map(tag -> TagValueInput.create(ThrowingProblemReporter.INSTANCE, fakeEntityHuman.registryAccess(), tag));
             if (playerCompound.isEmpty()) {
-                // player file does not exist
+
                 if (!options.isUnknownPlayerSupported()) {
                     return SpectateResponse.fail(NotCreatedReason.unknownTarget(Target.byGameProfile(player, name)));
-                } //else: unknown/new players are supported!
-                // if we get here, then we create a spectator inventory for the non-existent player anyway.
+                }
+
             } else {
-                // player file already exists, load the data from the compound onto the player
-                fakeEntityHuman.readAdditionalSaveData(playerCompound.get());   //only player-specific stuff
-                //fakeEntityHuman.load(playerCompound.get());                   //ALL entity data
+
+                fakeEntityHuman.readAdditionalSaveData(playerCompound.get());
+
             }
 
     		CraftHumanEntity craftHumanEntity = new FakeCraftHumanEntity(server, fakeEntityHuman);
@@ -260,11 +253,11 @@ public class InvseeImpl implements InvseePlatform, TestingCompatLayer {
     			world.getHandle(),
     			gameProfile,
                 clientInformation);
-    	
+
     	return CompletableFuture.supplyAsync(() -> {
             FakeCraftPlayer fakeCraftPlayer = fakeEntityPlayer.getBukkitEntity();
             fakeCraftPlayer.loadData();
-            loadWorldDataAndGameMode(server, fakeEntityPlayer); //workaround for https://github.com/PaperMC/Paper/issues/11572
+            loadWorldDataAndGameMode(server, fakeEntityPlayer);
 
             CreationOptions<Slot> creationOptions = newInventory.getCreationOptions();
             SI currentInv = currentInvProvider.apply(fakeCraftPlayer, creationOptions);
@@ -275,13 +268,7 @@ public class InvseeImpl implements InvseePlatform, TestingCompatLayer {
     	}, runnable -> scheduler.executeSyncPlayer(playerId, runnable, null));
     }
 
-
-
     private void loadWorldDataAndGameMode(CraftServer server, FakeEntityPlayer fakeEntityPlayer) {
-        // In Paper, Entity#load(CompoundTag) does not load the world info.
-        // Thus, in order to not upset our users, we do it ourselves manually in order to work around this Paper bug.
-        // See https://github.com/Jannyboy11/InvSee-plus-plus/issues/105.
-        // See PaperMC/PlayerList#placeNewPlayer.
 
         PlayerDataStorage playerDataStorage = server.getHandle().playerIo;
         Optional<ValueInput> optional = loadPlayerData(playerDataStorage, fakeEntityPlayer)
@@ -296,9 +283,9 @@ public class InvseeImpl implements InvseePlatform, TestingCompatLayer {
             Optional<Long> worldUUIDLeast = nbttagcompound.getLong("WorldUUIDLeast");
             Optional<String> legacyBukkitWorld;
             if (worldUUIDMost.isPresent() && worldUUIDLeast.isPresent()) {
-                // The main way for bukkit worlds to store the world is the world UUID despite mojang adding custom worlds
+
                 bWorld = server.getWorld(new UUID(worldUUIDMost.get(), worldUUIDLeast.get()));
-            } else if ((legacyBukkitWorld = nbttagcompound.getString("world")).isPresent()) { // legacy bukkit world name
+            } else if ((legacyBukkitWorld = nbttagcompound.getString("world")).isPresent()) {
                 bWorld = server.getWorld(legacyBukkitWorld.get());
             }
 
@@ -312,7 +299,7 @@ public class InvseeImpl implements InvseePlatform, TestingCompatLayer {
                 level = server.getHandle().getServer().getLevel(levelResourceKey);
 
                 if (level != null) {
-                    fakeEntityPlayer.spawnIn(level); //note: not only sets the ServerLevel, also sets gamemode.
+                    fakeEntityPlayer.spawnIn(level);
                 }
             }
 
@@ -327,9 +314,9 @@ public class InvseeImpl implements InvseePlatform, TestingCompatLayer {
     }
 
     private static DataResult<ResourceKey<Level>> parseLegacyDimensionType(ValueInput nbttagcompound) {
-        // Attempt to read the dimension from an int.
+
         try {
-            Optional<Integer> dimensionInput = nbttagcompound.getInt("Dimension"); // because of our ProblemReporter, this throws an exception when the type is not int.
+            Optional<Integer> dimensionInput = nbttagcompound.getInt("Dimension");
             if (dimensionInput.isPresent()) {
                 switch (dimensionInput.get()) {
                     case -1: return DataResult.success(Level.NETHER);
@@ -343,7 +330,6 @@ public class InvseeImpl implements InvseePlatform, TestingCompatLayer {
             }
         }
 
-        // Attempt to read the dimension from a string.
         Optional<ResourceKey<Level>> decodedLevel = nbttagcompound.read("Dimension", Level.RESOURCE_KEY_CODEC);
         if (decodedLevel.isPresent()) {
             return DataResult.success(decodedLevel.get());
@@ -353,7 +339,7 @@ public class InvseeImpl implements InvseePlatform, TestingCompatLayer {
     }
 
     private static Optional<InventoryOpenEvent> callInventoryOpenEvent(ServerPlayer nmsPlayer, AbstractContainerMenu nmsView) {
-        //copy-pasta from CraftEventFactory, but returns the cancelled event in case it was cancelled.
+
         if (nmsPlayer.containerMenu != nmsPlayer.inventoryMenu) {
             nmsPlayer.connection.handleContainerClose(new ServerboundContainerClosePacket(nmsPlayer.containerMenu.containerId));
         }
@@ -409,7 +395,7 @@ public class InvseeImpl implements InvseePlatform, TestingCompatLayer {
             return CraftItemStack.asNMSCopy(palette.cursor());
         } else if (slot instanceof PersonalSlot personalSlot) {
             if (!personalSlot.works()) return CraftItemStack.asNMSCopy(palette.inaccessible());
-            if (group == null) return ItemStack.EMPTY; //no group for personal slot -> fall back to empty stack
+            if (group == null) return ItemStack.EMPTY;
 
             Mirror<PlayerInventorySlot> mirror = view.nms.creationOptions.getMirror();
             PlayerInventorySlot pis = mirror.getSlot(rawIndex);
@@ -423,7 +409,7 @@ public class InvseeImpl implements InvseePlatform, TestingCompatLayer {
 
     @Override
     public Stream<Material> materials() {
-        //https://discord.com/channels/289587909051416579/1077385604012179486/1263418959554805843
+
         Stream<Material> res;
         Registry<Material> registry = Bukkit.getRegistry(Material.class);
         if (registry != null) {
@@ -431,13 +417,9 @@ public class InvseeImpl implements InvseePlatform, TestingCompatLayer {
         } else {
             res = Registry.MATERIAL.stream();
         }
-        // Note: in the future, Registry.ITEM may become a stable api. We prefer to use that one since we don't care
-        // about Block materials; we only care about Item materials.
+
         return res.filter(Material::isItem);
     }
-
-
-    // === Testing ===
 
     @Override
     public Object loadPlayerSaveCompound(UUID playerId, String playerName) {

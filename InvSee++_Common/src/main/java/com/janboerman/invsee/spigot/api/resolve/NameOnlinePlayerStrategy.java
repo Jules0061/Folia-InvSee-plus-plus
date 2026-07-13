@@ -9,9 +9,6 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-/**
- * A strategy which resolves player's usernames if they are online.
- */
 public class NameOnlinePlayerStrategy implements NameResolveStrategy {
 
     private final Server server;

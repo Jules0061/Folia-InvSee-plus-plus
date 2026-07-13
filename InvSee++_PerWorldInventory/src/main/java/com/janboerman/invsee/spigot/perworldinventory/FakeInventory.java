@@ -69,13 +69,13 @@ public class FakeInventory implements Inventory {
                     ItemStack inSlot = items[j];
 
                     if (inSlot == null) {
-                        //empty slot, just put it!
+
                         getStorageContents()[j] = toAdd.clone();
                         toAdd = null;
                         break;
                     } else {
                         if (inSlot.isSimilar(toAdd)) {
-                            //merge
+
                             int transferAmount = Math.min(inSlot.getMaxStackSize() - inSlot.getAmount(), toAdd.getAmount());
                             toAdd.setAmount(toAdd.getAmount() - transferAmount);
                             inSlot.setAmount(inSlot.getAmount() + transferAmount);
@@ -83,16 +83,15 @@ public class FakeInventory implements Inventory {
                                 toAdd = null;
                                 break;
                             }
-                        } //else: just continue the inner loop - try remaining slots
+                        }
                     }
-                } //end looping over this inventory's contents
+                }
 
-                //check whether the stack was completely transferred
                 if (toAdd != null) {
                     result.put(i, toAdd);
                 }
             }
-        } //end loop over the items to add
+        }
 
         return result;
     }
@@ -112,7 +111,7 @@ public class FakeInventory implements Inventory {
 
                     if (inSlot != null) {
                         if (inSlot.isSimilar(toRemove)) {
-                            //remove
+
                             int transferAmount = Math.min(inSlot.getAmount(), toRemove.getAmount());
                             toRemove.setAmount(toRemove.getAmount() - transferAmount);
                             inSlot.setAmount(inSlot.getAmount() - transferAmount);
@@ -123,16 +122,15 @@ public class FakeInventory implements Inventory {
                                 toRemove = null;
                                 break;
                             }
-                        } //else: just continue the inner loop - try remaining slots
+                        }
                     }
-                } //end looping over this inventory's contents
+                }
 
-                //check whether the stack was completely transferred
                 if (toRemove != null) {
                     result.put(i, toRemove);
                 }
             }
-        } //end loop over the items to add
+        }
 
         return result;
     }
@@ -388,7 +386,7 @@ public class FakeInventory implements Inventory {
         } else if (inventoryHolder instanceof BlockState) {
             return ((BlockState) inventoryHolder).getLocation();
         } else {
-            //I don't think there are any more options.
+
             return null;
         }
     }

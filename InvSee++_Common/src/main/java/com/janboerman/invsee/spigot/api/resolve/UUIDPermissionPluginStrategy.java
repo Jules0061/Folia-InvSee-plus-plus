@@ -8,9 +8,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
-/**
- * A strategy which tries to resolve players' Unique IDs using a handful of popular permission plugins.
- */
 public class UUIDPermissionPluginStrategy implements UUIDResolveStrategy {
 
     private final Plugin plugin;
@@ -34,8 +31,7 @@ public class UUIDPermissionPluginStrategy implements UUIDResolveStrategy {
                 .thenCombine(resolveUsingGroupManager(userName), UUIDPermissionPluginStrategy::firstPresentOptional)
                 .thenCombine(resolveUsingBungeePerms(userName), UUIDPermissionPluginStrategy::firstPresentOptional)
                 .thenCombine(resolveUsingUltraPermissions(userName), UUIDPermissionPluginStrategy::firstPresentOptional);
-        //PermissionsEx? version 1.x seems to be deprecated, but 2.0's development seems to be halted.
-        //Any other permission plugins we're forgetting?
+
     }
 
     private CompletableFuture<Optional<UUID>> resolveUsingLuckPerms(String userName) {
@@ -77,8 +73,6 @@ public class UUIDPermissionPluginStrategy implements UUIDResolveStrategy {
                     overloadedWorldHolder = worldsHolder.getDefaultWorld();
                 }
                 org.anjocaido.groupmanager.data.User user = overloadedWorldHolder.getUser(userName);
-                //funnily enough, GroupManager will just create a User without a UUID if it doesn't know about one.
-                //hence 'user' is always non-null!
 
                 String userId = user.getUUID();
                 try {

@@ -51,12 +51,12 @@ class NoOutput implements LogOutput {
 
     @Override
     public void log(Difference difference) {
-        // no-op
+
     }
 
     @Override
     public void close() {
-        // no-op
+
     }
 }
 
@@ -116,7 +116,7 @@ class LogOutputImpl implements LogOutput {
                     }
                     break;
                 case CONSOLE:
-                    if (logTargets.contains(LogTarget.SERVER_LOG_FILE)) break; //server logger already outputs to console
+                    if (logTargets.contains(LogTarget.SERVER_LOG_FILE)) break;
 
                     ConsoleHandler consoleHandler = new ConsoleHandler();
                     consoleHandler.setLevel(Level.ALL);

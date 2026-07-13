@@ -4,7 +4,6 @@ import com.janboerman.invsee.spigot.api.target.Target;
 
 import java.util.Objects;
 
-/** The target player does not exist. */
 public class TargetDoesNotExist extends UnknownTarget {
 
     TargetDoesNotExist(Target target) {

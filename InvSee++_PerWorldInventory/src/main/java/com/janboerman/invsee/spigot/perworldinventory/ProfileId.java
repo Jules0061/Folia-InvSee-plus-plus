@@ -29,12 +29,10 @@ public class ProfileId {
                 group.addWorld(commandArgs.world);
             }
         } else if (commandArgs.world != null) {
-            //although at runtime the options.world != null check will only be performed once
-            //it looks ugly to have this expression twice in the code.
-            //can I un-duplicate it?
+
             group = hook.getGroupForWorld(commandArgs.world);
         } else {
-            //unmanaged group!
+
             group = new Group("", Collections.emptySet(), gameMode, null);
         }
 

@@ -6,9 +6,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
-/**
- * Strategy which resolves usernames by doing a simple {@linkplain Map} lookup.
- */
 public class NameInMemoryStrategy implements NameResolveStrategy {
 
     private final Map<UUID, String> cache;

@@ -4,7 +4,6 @@ import com.janboerman.invsee.spigot.api.SpectatorInventory;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-/** Called when a {@link SpectatorInventory} is created whose target player is offline. */
 public class SpectatorInventoryOfflineCreatedEvent extends Event {
 
     private static final HandlerList handlers = new HandlerList();
@@ -24,7 +23,6 @@ public class SpectatorInventoryOfflineCreatedEvent extends Event {
         return handlers;
     }
 
-    /** Get the spectator inventory. */
     public SpectatorInventory<?> getInventory() {
         return spectatorInventory;
     }

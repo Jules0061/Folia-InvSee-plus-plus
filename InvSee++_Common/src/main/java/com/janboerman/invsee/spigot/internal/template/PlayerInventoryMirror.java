@@ -25,7 +25,6 @@ public class PlayerInventoryMirror implements Mirror<PlayerInventorySlot> {
     private PlayerInventorySlot[] slots;
     private Map<PlayerInventorySlot, Integer> indices;
 
-    /** @deprecated Use {@link #ofTemplate(String)} instead. */
     @Deprecated
     public PlayerInventoryMirror(String template) {
         slots = Compat.lines(template)
@@ -80,7 +79,6 @@ public class PlayerInventoryMirror implements Mirror<PlayerInventorySlot> {
         return slots[index];
     }
 
-    //for testing purposes
     public PlayerInventorySlot[] getSlots() {
         return Arrays.copyOf(slots, slots.length);
     }
@@ -91,9 +89,6 @@ public class PlayerInventoryMirror implements Mirror<PlayerInventorySlot> {
         for (PlayerInventorySlot slot : slots) sj.add(slot.toString());
         return sj.toString();
     }
-
-
-    // Mirror -> template
 
     public static String toTemplate(Mirror<PlayerInventorySlot> mirror) {
         StringBuilder stringBuilder = new StringBuilder();

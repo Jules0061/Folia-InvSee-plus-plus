@@ -13,16 +13,13 @@ import java.util.UUID;
 
 public abstract class AbstractNmsInventory<Slot, Bukkit extends SpectatorInventory<Slot>, NMS extends AbstractNmsInventory<Slot, Bukkit, NMS>> implements ShallowCopy<NMS> {
 
-    //NOTE: despite the many similarities between the different NMS inventory implementations,
-    //NOTE: we can only abstract out the non-nms parts!
-
     public final UUID targetPlayerUuid;
     public final String targetPlayerName;
 
     public final CreationOptions<Slot> creationOptions;
     private Bukkit bukkit;
 
-    protected int maxStack; //can't abstract out the getters and setters because of remapping.
+    protected int maxStack;
     private final List<HumanEntity> transaction = new ArrayList<>(1);
     protected InventoryHolder owner;
 

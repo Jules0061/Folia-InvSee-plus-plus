@@ -19,8 +19,8 @@ final class SimpleErrorTracker implements ErrorTracker {
     private final Set<Class<? extends Throwable>> ignoredTypes = new CopyOnWriteArraySet<>();
     private final Set<Pattern> ignoredPatterns = new CopyOnWriteArraySet<>();
 
-    private volatile /*@Nullable*/ BiConsumer</*@Nullable*/ ClassLoader, Throwable> errorEvent = null;
-    private volatile /*@Nullable*/ UncaughtExceptionHandler originalHandler = null;
+    private volatile  BiConsumer< ClassLoader, Throwable> errorEvent = null;
+    private volatile  UncaughtExceptionHandler originalHandler = null;
 
     @Override
     public void trackError(final String message) {
@@ -51,7 +51,7 @@ final class SimpleErrorTracker implements ErrorTracker {
         }
     }
 
-    private boolean isIgnored(/*@Nullable*/ final Throwable error, final Set<Throwable> visited) {
+    private boolean isIgnored( final Throwable error, final Set<Throwable> visited) {
         if (error == null || !visited.add(error)) return false;
 
         if (ignoredTypes.contains(error.getClass())) return true;
@@ -123,7 +123,7 @@ final class SimpleErrorTracker implements ErrorTracker {
     }
 
     @Override
-    public synchronized void attachErrorContext(/*@Nullable*/ final ClassLoader loader) throws IllegalStateException {
+    public synchronized void attachErrorContext( final ClassLoader loader) throws IllegalStateException {
         if (originalHandler != null) throw new IllegalStateException("Error context already attached");
         originalHandler = Thread.getDefaultUncaughtExceptionHandler();
         Thread.setDefaultUncaughtExceptionHandler((thread, error) -> {
@@ -153,12 +153,12 @@ final class SimpleErrorTracker implements ErrorTracker {
     }
 
     @Override
-    public synchronized void setContextErrorHandler(/*@Nullable*/ final BiConsumer</*@Nullable*/ ClassLoader, Throwable> errorEvent) {
+    public synchronized void setContextErrorHandler( final BiConsumer< ClassLoader, Throwable> errorEvent) {
         this.errorEvent = errorEvent;
     }
 
     @Override
-    public synchronized Optional<BiConsumer</*@Nullable*/ ClassLoader, Throwable>> getContextErrorHandler() {
+    public synchronized Optional<BiConsumer< ClassLoader, Throwable>> getContextErrorHandler() {
         return Optional.ofNullable(errorEvent);
     }
 }

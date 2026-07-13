@@ -18,24 +18,24 @@ public enum DownloadSource {
 
     @Override
     public String toString() {
-        switch (this) {
-            case SPIGOTMC: return "SpigotMC";
-            case MODRINTH: return "Modrinth";
-            case HANGAR: return "Hangar";
-            case GITHUB: return "GitHub";
-            default: return "Unknown";
-        }
+        return switch (this) {
+            case SPIGOTMC -> "SpigotMC";
+            case MODRINTH -> "Modrinth";
+            case HANGAR -> "Hangar";
+            case GITHUB -> "GitHub";
+            default -> "Unknown";
+        };
     }
 
     private static DownloadSource fromString(String line) {
         if (line == null) return UNKNOWN;
-        switch (line) {
-            case "SpigotMC": return SPIGOTMC;
-            case "Modrinth": return MODRINTH;
-            case "Hangar": return HANGAR;
-            case "GitHub": return GITHUB;
-            default: return UNKNOWN;
-        }
+        return switch (line) {
+            case "SpigotMC" -> SPIGOTMC;
+            case "Modrinth" -> MODRINTH;
+            case "Hangar" -> HANGAR;
+            case "GitHub" -> GITHUB;
+            default -> UNKNOWN;
+        };
     }
 
     public static DownloadSource detect(Plugin plugin) {

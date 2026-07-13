@@ -54,14 +54,13 @@ public class FakeAttributeInstance implements AttributeInstance {
 
     @Override
     public double getValue() {
-        //https://minecraft.wiki/w/Attribute#Operations
 
         double x = getBaseValue();
         double y = -1;
 
         AttributeModifier.Operation lastOperation = null;
         for (AttributeModifier modifier : getModifiers()) {
-            //gotta love my custom iteration order :)
+
             AttributeModifier.Operation operation = modifier.getOperation();
             if (lastOperation == AttributeModifier.Operation.ADD_NUMBER && operation == AttributeModifier.Operation.ADD_SCALAR) {
                 y = x;
@@ -75,7 +74,7 @@ public class FakeAttributeInstance implements AttributeInstance {
                     y += x*byAmount;
                     break;
                 case MULTIPLY_SCALAR_1:
-                    y = y * (1 + byAmount); //y += y*byAmount
+                    y = y * (1 + byAmount);
                     break;
             }
             lastOperation = operation;
@@ -141,7 +140,7 @@ public class FakeAttributeInstance implements AttributeInstance {
             case GENERIC_MOVEMENT_SPEED:
                 return 0.7;
             case GENERIC_ATTACK_DAMAGE:
-                return 1;   //2.0 * half hearts
+                return 1;
             case GENERIC_ARMOR:
                 return 0;
             case GENERIC_ARMOR_TOUGHNESS:

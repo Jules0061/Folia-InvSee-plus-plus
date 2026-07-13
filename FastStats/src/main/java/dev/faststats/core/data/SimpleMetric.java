@@ -6,9 +6,9 @@ import java.util.concurrent.Callable;
 
 abstract class SimpleMetric<T> implements Metric<T> {
     private final @SourceId String id;
-    private final Callable</*@Nullable*/ T> callable;
+    private final Callable< T> callable;
 
-    public SimpleMetric(@SourceId final String id, final Callable</*@Nullable*/ T> callable) throws IllegalArgumentException {
+    public SimpleMetric(@SourceId final String id, final Callable< T> callable) throws IllegalArgumentException {
         if (!id.matches(SourceId.PATTERN)) {
             throw new IllegalArgumentException("Invalid source id '" + id + "', must match '" + SourceId.PATTERN + "'");
         }

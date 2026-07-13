@@ -17,7 +17,7 @@ public class SpectatorInventoryEditListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onClick(InventoryClickEvent event) {
-        Inventory inventory = event.getInventory(); //this is the top inventory from the view, not the clicked inventory!
+        Inventory inventory = event.getInventory();
         HumanEntity player = event.getWhoClicked();
         if ((inventory instanceof MainSpectatorInventory && !player.hasPermission(INVENTORY_EDIT_PERMISSION))
                 || (inventory instanceof EnderSpectatorInventory && !player.hasPermission(ENDERCHEST_EDIT_PERMISSION))) {

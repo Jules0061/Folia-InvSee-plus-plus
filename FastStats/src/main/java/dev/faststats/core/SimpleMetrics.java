@@ -27,13 +27,13 @@ public abstract class SimpleMetrics implements Metrics {
             .connectTimeout(Duration.ofSeconds(3))
             .build();
 
-    private /*@Nullable*/ ScheduledExecutorService executor = null;
+    private  ScheduledExecutorService executor = null;
 
     private final Set<Metric<?>> metrics;
     private final Config config;
     private final @Token String token;
-    private final /*@Nullable*/ ErrorTracker tracker;
-    private final /*@Nullable*/ Runnable flush;
+    private final  ErrorTracker tracker;
+    private final  Runnable flush;
     private final URI url;
     private final boolean debug;
 
@@ -52,7 +52,6 @@ public abstract class SimpleMetrics implements Metrics {
         this.BUILD_ID = properties.getProperty("build-id", "unknown");
     }
 
-//    @Contract(mutates = "io")
     @SuppressWarnings("PatternValidation")
     protected SimpleMetrics(final Factory<?, ?> factory, final Config config) throws IllegalStateException {
         if (factory.token == null) throw new IllegalStateException("Token must be specified");
@@ -66,18 +65,16 @@ public abstract class SimpleMetrics implements Metrics {
         this.url = factory.url;
     }
 
-//    @Contract(mutates = "io")
     protected SimpleMetrics(final Factory<?, ?> factory, final Path config) throws IllegalStateException {
         this(factory, Config.read(config));
     }
 
-//    @VisibleForTesting
     protected SimpleMetrics(
             final Config config,
             final Set<Metric<?>> metrics,
             @Token final String token,
-            /*@Nullable*/ final ErrorTracker tracker,
-            /*@Nullable*/ final Runnable flush,
+             final ErrorTracker tracker,
+             final Runnable flush,
             final URI url,
             final boolean debug
     ) {
@@ -112,8 +109,6 @@ public abstract class SimpleMetrics implements Metrics {
         return TimeUnit.MINUTES.toMillis(30);
     }
 
-//    @Async.Schedule
-//    @MustBeInvokedByOverriders
     protected void startSubmitting() {
         startSubmitting(getInitialDelay(), getPeriod(), TimeUnit.MILLISECONDS);
     }
@@ -289,10 +284,9 @@ public abstract class SimpleMetrics implements Metrics {
         return config;
     }
 
-//    @Contract(mutates = "param1")
     protected abstract void appendDefaultData(JsonObject metrics);
 
-    protected void error(final String message, /*@Nullable*/ final Throwable throwable) {
+    protected void error(final String message,  final Throwable throwable) {
         if (debug) printError("[" + getClass().getName() + "]: " + message, throwable);
     }
 
@@ -304,7 +298,7 @@ public abstract class SimpleMetrics implements Metrics {
         if (debug) printInfo("[" + getClass().getName() + "]: " + message);
     }
 
-    protected abstract void printError(String message, /*(@Nullable*/ Throwable throwable);
+    protected abstract void printError(String message,  Throwable throwable);
 
     protected abstract void printInfo(String message);
 
@@ -329,9 +323,9 @@ public abstract class SimpleMetrics implements Metrics {
     public abstract static class Factory<T, F extends Metrics.Factory<T, F>> implements Metrics.Factory<T, F> {
         private final Set<Metric<?>> metrics = new HashSet<>(0);
         private URI url = URI.create("https://metrics.faststats.dev/v1/collect");
-        private /*@Nullable*/ ErrorTracker tracker;
-        private /*@Nullable*/ Runnable flush;
-        private /*@Nullable*/ String token;
+        private  ErrorTracker tracker;
+        private  Runnable flush;
+        private  String token;
         private boolean debug = false;
 
         @Override
@@ -432,12 +426,10 @@ public abstract class SimpleMetrics implements Metrics {
                 + "#\n"
                 + "# For more information, visit: https://faststats.dev/info\n";
 
-//        @Contract(mutates = "io")
         public static Config read(final Path file) throws RuntimeException {
             return read(file, DEFAULT_COMMENT, false, false);
         }
 
-//        @Contract(mutates = "io")
         public static Config read(final Path file, final String comment, final boolean externallyManaged, final boolean externallyEnabled) throws RuntimeException {
             final Optional<Properties> properties = readOrEmpty(file);
             final boolean firstRun = !properties.isPresent();

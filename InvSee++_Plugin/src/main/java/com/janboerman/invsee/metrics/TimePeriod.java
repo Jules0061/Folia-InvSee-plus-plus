@@ -16,7 +16,7 @@ public enum TimePeriod {
 
     private final String toString;
 
-    private TimePeriod(String toString) {
+    TimePeriod(String toString) {
         this.toString = toString;
     }
 

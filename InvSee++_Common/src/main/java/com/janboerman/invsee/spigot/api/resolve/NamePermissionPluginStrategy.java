@@ -7,9 +7,7 @@ import org.bukkit.plugin.Plugin;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-/**
- * A strategy which tries to resolve players' usernames using a handful of popular permission plugins.
- */
+
 public class NamePermissionPluginStrategy implements NameResolveStrategy {
     private final Plugin plugin;
     private final Server server;
@@ -25,7 +23,6 @@ public class NamePermissionPluginStrategy implements NameResolveStrategy {
         if (one.isPresent()) return one;
         return two;
     }
-
 
     @Override
     public CompletableFuture<Optional<String>> resolveUserName(UUID uniqueId) {
@@ -72,8 +69,6 @@ public class NamePermissionPluginStrategy implements NameResolveStrategy {
                     org.anjocaido.groupmanager.dataholder.worlds.WorldsHolder worldsHolder = groupManager.getWorldsHolder();
                     org.anjocaido.groupmanager.dataholder.OverloadedWorldHolder overloadedWorldHolder = worldsHolder.getDefaultWorld();
                     org.anjocaido.groupmanager.data.User user = overloadedWorldHolder.getUser(uniqueId.toString());
-                    //funnily enough, GroupManager will just create a User without a UUID if it doesn't know about one.
-                    //hence 'user' is always non-null!
 
                     resultFuture.complete(Optional.ofNullable(user.getLastName()));
                 } else {

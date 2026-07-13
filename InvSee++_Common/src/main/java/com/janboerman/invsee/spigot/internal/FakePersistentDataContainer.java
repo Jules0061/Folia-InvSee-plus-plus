@@ -105,7 +105,7 @@ public class FakePersistentDataContainer implements PersistentDataContainer {
             return true;
         }
         else if (obj instanceof FakePersistentDataContainer) {
-            //Use pattern matching if I ever upgrade to Java 17
+
             FakePersistentDataContainer fakeThat = (FakePersistentDataContainer) obj;
             return Objects.equals(this.map, fakeThat.map);
         }
@@ -128,7 +128,7 @@ public class FakePersistentDataContainer implements PersistentDataContainer {
             return true;
         }
         else {
-            //includes obj == null
+
             return false;
         }
     }

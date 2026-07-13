@@ -37,7 +37,6 @@ class ResponseUtils {
         }
     }
 
-
     static Charset charsetFromHeader(String contentType) {
         if (contentType != null) {
             int indexOfSemi = contentType.indexOf(';');

@@ -15,11 +15,7 @@ import java.util.concurrent.Executor;
 
 import static com.janboerman.invsee.mojangapi.ResponseUtils.*;
 
-/**
- * API to resolve players' usernames and unique IDs via <a href="https://github.com/Electroid/mojang-api">Electroid/mojang-api</a>.
- */
 public class ElectroidAPI {
-    //https://github.com/Electroid/mojang-api
 
     private final HttpClient httpClient;
 
@@ -49,15 +45,15 @@ public class ElectroidAPI {
 
         return future.thenApply(response -> {
             if (response.statusCode() == 200) {
-                //ok!
+
                 JSONObject json = readJSONObject(response);
-                String uuid = (String) json.get("uuid");        // already contains dashes.
+                String uuid = (String) json.get("uuid");
                 return Optional.of(UUID.fromString(uuid));
             } else if (response.statusCode() == 204) {
-                //no content
+
                 return Optional.empty();
             } else {
-                //unexpected
+
                 throw new RuntimeException("Unexpected response from Electroid mojang api, status code=" + response.statusCode() + ".");
             }
         });
@@ -65,7 +61,7 @@ public class ElectroidAPI {
 
     public CompletableFuture<Optional<String>> lookupUserName(UUID uniqueId) {
         CompletableFuture<HttpResponse<InputStream>> future = httpClient.sendAsync(HttpRequest
-                .newBuilder(URI.create("https://api.ashcon.app/mojang/v2/user/" + uniqueId.toString()))     // uuid with dashes allowed
+                .newBuilder(URI.create("https://api.ashcon.app/mojang/v2/user/" + uniqueId.toString()))
                 .header("Accept", "application/json")
                 .header("User-Agent", "InvSee++/ElectroidAPI")
                 .timeout(Duration.ofSeconds(5))
@@ -73,15 +69,15 @@ public class ElectroidAPI {
 
         return future.thenApply(response -> {
             if (response.statusCode() == 200) {
-                //ok!
+
                 JSONObject json = readJSONObject(response);
                 String userName = (String) json.get("username");
                 return Optional.of(userName);
             } else if (response.statusCode() == 204) {
-                //no content
+
                 return Optional.empty();
             } else {
-                //unexpected
+
                 throw new RuntimeException("Unexpected response from Electroid mojang api, status code=" + response.statusCode() + ".");
             }
         });

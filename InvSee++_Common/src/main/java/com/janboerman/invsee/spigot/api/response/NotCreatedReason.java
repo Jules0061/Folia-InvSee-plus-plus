@@ -2,11 +2,6 @@ package com.janboerman.invsee.spigot.api.response;
 
 import com.janboerman.invsee.spigot.api.target.Target;
 
-/**
- * A reason explaining why a SpectatorInventory could not be created.
- * @see <a href="https://github.com/Jannyboy11/InvSee-plus-plus/wiki/Basic-usage#a-note-on-notcreatedreason">NotCreatedReason explaination on the wiki</a>
- * @see SpectateResponse
- */
 public interface NotCreatedReason {
 
     public static UnknownTarget unknownTarget(Target target) {
@@ -21,7 +16,7 @@ public interface NotCreatedReason {
         return new TargetHasExemptPermission(target);
     }
 
-    @Deprecated//(forRemoval = true, since = "0.21.6") TODO remove 1.0.0
+    @Deprecated
     public static ImplementationFault implementationFault(Target target) {
         return new ImplementationFault(target);
     }
@@ -34,4 +29,3 @@ public interface NotCreatedReason {
         return UnknownReason.INSTANCE;
     }
 }
-

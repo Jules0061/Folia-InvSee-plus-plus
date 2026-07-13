@@ -48,7 +48,6 @@ final class BukkitMetricsImpl extends SimpleMetrics implements BukkitMetrics {
                 ).orElseGet(server::getOnlineMode);
     }
 
-
     @SuppressWarnings("removal")
     private boolean isProxyOnlineMode() {
         final Server server = plugin.getServer();
@@ -82,7 +81,7 @@ final class BukkitMetricsImpl extends SimpleMetrics implements BukkitMetrics {
     }
 
     @Override
-    protected void printError(final String message, /*@Nullable*/ final Throwable throwable) {
+    protected void printError(final String message,  final Throwable throwable) {
         plugin.getLogger().log(Level.SEVERE, message, throwable);
     }
 

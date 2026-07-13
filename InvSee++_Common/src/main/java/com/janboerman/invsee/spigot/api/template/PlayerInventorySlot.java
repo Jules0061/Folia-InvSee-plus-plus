@@ -1,6 +1,5 @@
 package com.janboerman.invsee.spigot.api.template;
 
-/** Represents a slot of a {@link com.janboerman.invsee.spigot.api.MainSpectatorInventory}. */
 public enum PlayerInventorySlot {
 
     CONTAINER_00,
@@ -64,10 +63,6 @@ public enum PlayerInventorySlot {
 
     private static final PlayerInventorySlot[] VALUES = values();
 
-    /**
-     * Get whether this slot is a regular container slot.
-     * @return true if this slot is a container slot, otherwise false
-     */
     public boolean isContainer() {
         switch (this) {
             case CONTAINER_00:
@@ -112,11 +107,6 @@ public enum PlayerInventorySlot {
         }
     }
 
-    /**
-     * Get whether this slot is an armour slot.
-     * @return true if this slot is an armour slot, otherwise false
-     * @apiNote the {@link #OFFHAND} slot is NOT considered an armour slot.
-     */
     public boolean isArmour() {
         switch (this) {
             case ARMOUR_BOOTS:
@@ -129,10 +119,6 @@ public enum PlayerInventorySlot {
         }
     }
 
-    /**
-     * Get whether this slot is a personal slot. Personal slots are slots which host items that are personal to the player, such as crafting slots, enchanting window and villager working block windows.
-     * @return true if this slot is personal to the player, otherwise false
-     */
     public boolean isPersonal() {
         switch (this) {
             case PERSONAL_00:
@@ -150,40 +136,22 @@ public enum PlayerInventorySlot {
         }
     }
 
-    /**
-     * Get whether this slot is an offhand slot.
-     * @return true if this slot is the offhand slot, otherwise false
-     */
     public boolean isOffHand() {
         return this == OFFHAND;
     }
 
-    /**
-     * Get whether this slot is a body slot.
-     * @return true if this slot is the body slot, otherwise false
-     */
     public boolean isBody() {
         return this == BODY;
     }
 
-    /**
-     * Get whether this slot is a saddle slot.
-     * @return true if this slot is the saddle slot, otherwise false
-     */
     public boolean isSaddle() {
         return this == SADDLE;
     }
 
-    /**
-     * Get whether this slot is the cursor slot. The cursor slot is the slot that hosts the item that the target player is holding in its cursor when they are viewing an inventory themselves.
-     * @return true if this slot is the cursor slot, otherwise false
-     */
     public boolean isCursor() {
         return this == CURSOR;
     }
 
-
-    /** Get the index of the {@link com.janboerman.invsee.spigot.api.MainSpectatorInventory} at which this slot resides. */
     public int defaultIndex() {
         if (isContainer()) {
             return 0 + ordinal() - CONTAINER_00.ordinal();
@@ -202,14 +170,13 @@ public enum PlayerInventorySlot {
         }
     }
 
-    /** Get the slot given its index in the {@link com.janboerman.invsee.spigot.api.MainSpectatorInventory}. */
     public static PlayerInventorySlot byDefaultIndex(int index) {
         if (0 <= index && index <= 43) {
-            return VALUES[index]; //storage, armour, offhand, body, saddle, cursor
+            return VALUES[index];
         } else if (45 <= index && index < 54) {
-            return VALUES[index + PERSONAL_00.ordinal() - 45]; //personal
+            return VALUES[index + PERSONAL_00.ordinal() - 45];
         } else {
-            return null; //unused slots, or out of bounds
+            return null;
         }
     }
 

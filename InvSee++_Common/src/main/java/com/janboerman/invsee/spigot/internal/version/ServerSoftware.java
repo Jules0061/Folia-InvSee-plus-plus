@@ -9,7 +9,6 @@ import java.util.Objects;
 
 public class ServerSoftware {
 
-    //only list supported server versions here:
     public static final ServerSoftware
             CRAFTBUKKIT_1_8_8 = new ServerSoftware(CRAFTBUKKIT, _1_8_8),
             CRAFTBUKKIT_1_12_2 = new ServerSoftware(CRAFTBUKKIT, _1_12_2),
@@ -109,12 +108,12 @@ public class ServerSoftware {
             case "org.bukkit.craftbukkit.v1_20_R3.CraftServer":
                 switch (CraftbukkitMappingsVersion.getMappingsVersion(server)) {
                     case CraftbukkitMappingsVersion._1_20_4:
-                        //unfortunately we have to do this since CraftBukkit 1.20.3 and 1.20.4 share the same mappings version.
+
                         switch (server.getBukkitVersion()) {
                             case "1.20.3-R0.1-SNAPSHOT": return new ServerSoftware(CRAFTBUKKIT, _1_20_3);
                             case "1.20.4-R0.1-SNAPSHOT": return CRAFTBUKKIT_1_20_4;
                         }
-                        //best-effort
+
                         return CRAFTBUKKIT_1_20_4;
                 }
             case "org.bukkit.craftbukkit.v1_20_R4.CraftServer":
@@ -147,12 +146,12 @@ public class ServerSoftware {
             case "org.bukkit.craftbukkit.v1_21_R6.CraftServer":
                 switch (CraftbukkitMappingsVersion.getMappingsVersion(server)) {
                     case CraftbukkitMappingsVersion._1_21_9:
-                        //unfortunately we have to do this since CraftBukkit 1.21.9 and 1.21.10 share the same mappings version.
+
                         switch (server.getBukkitVersion()) {
                             case "1.21.9-R0.1-SNAPSHOT": return CRAFTBUKKIT_1_21_9;
                             case "1.21.10-R0.1-SNAPSHOT": return CRAFTBUKKIT_1_21_10;
                         }
-                        //best-effort
+
                         return CRAFTBUKKIT_1_21_10;
                 }
             case "org.bukkit.craftbukkit.v1_21_R7.CraftServer":
@@ -160,12 +159,12 @@ public class ServerSoftware {
                     case CraftbukkitMappingsVersion._1_21_11: return CRAFTBUKKIT_1_21_11;
                 }
             case "org.bukkit.craftbukkit.CraftServer":
-                // CraftBukkit 26.1 and up or Paper 1.20.4 and up:
+
                 try {
-                    // Call Server#getMinecraftVersion() to find out the version (this method was added by Paper).
+
                     return new ServerSoftware(PAPER, server.getMinecraftVersion());
                 } catch (NoSuchMethodError nsme) {
-                    // Apparently we are not running on Paper
+
                     switch (CraftbukkitMappingsVersion.getMappingsVersion(server)) {
                         case CraftbukkitMappingsVersion._1_20_6: return CRAFTBUKKIT_1_20_6;
                         case CraftbukkitMappingsVersion._1_21_1: return CRAFTBUKKIT_1_21_1;

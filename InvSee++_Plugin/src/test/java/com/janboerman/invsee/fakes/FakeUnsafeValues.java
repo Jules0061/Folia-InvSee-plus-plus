@@ -114,16 +114,13 @@ public class FakeUnsafeValues implements UnsafeValues {
 
     @Override
     public int getDataVersion() {
-        return 0;   //probably inaccurate. but w/e
+        return 0;
 
-        //CraftBukkit implements this using the following line:
-        //SharedConstants.getGameVersion().getWorldVersion();
     }
 
     @Override
     public ItemStack modifyItemStack(ItemStack itemStack, String s) {
-        //s is a json string that represents an nbt tag
-        //TODO actually, we could implement this now with Nedit, TheNullicorn's NBT library.
+
         return itemStack;
     }
 
@@ -187,12 +184,10 @@ public class FakeUnsafeValues implements UnsafeValues {
         throw new UnsupportedOperationException();
     }
 
-    //@Override
     public String getTranslationKey(Material material) {
         throw new UnsupportedOperationException();
     }
 
-    //@Override
     public String getTranslationKey(Block block) {
         throw new UnsupportedOperationException();
     }
@@ -212,7 +207,6 @@ public class FakeUnsafeValues implements UnsafeValues {
         throw new UnsupportedOperationException();
     }
 
-    //@Override
     public @NotNull <T extends Keyed> Registry<T> registryFor(Class<T> aClass) {
         throw new UnsupportedOperationException();
     }
@@ -244,7 +238,7 @@ public class FakeUnsafeValues implements UnsafeValues {
 
     @Override
     public int getProtocolVersion() {
-        //CraftUnsafeValues
+
         return 0;
     }
 

@@ -34,9 +34,7 @@ class FakeEntityPlayer extends ServerPlayer {
             bukkitEntity = new FakeCraftPlayer(getServer(this).server, this);
 
             try {
-                //https://github.com/Jannyboy11/InvSee-plus-plus/issues/72
-                //make sure we set bukkitEntity, to ensure that CraftBukkit can get the PersistentData from the CraftEntity when saving the player's NBT tag compound!
-                //See Entity#saveWithoutId
+
                 Field craftbukkitField = Entity.class.getDeclaredField("bukkitEntity");
                 craftbukkitField.setAccessible(true);
                 craftbukkitField.set(this, bukkitEntity);

@@ -4,19 +4,14 @@ import com.janboerman.invsee.spigot.InvseePlusPlus;
 import com.janboerman.invsee.spigot.api.Scheduler;
 import io.papermc.paper.threadedregions.scheduler.EntityScheduler;
 import org.bukkit.Server;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Scheduler implementation based on {@link io.papermc.paper.threadedregions.scheduler.GlobalRegionScheduler},
- * {@link io.papermc.paper.threadedregions.scheduler.AsyncScheduler} and {@link EntityScheduler}.
- */
 public class FoliaScheduler implements Scheduler {
 
-    private InvseePlusPlus plugin;
+    private final InvseePlusPlus plugin;
 
     public FoliaScheduler(InvseePlusPlus plugin) {
         this.plugin = plugin;
@@ -32,10 +27,6 @@ public class FoliaScheduler implements Scheduler {
         } else {
             executeSyncGlobal(task);
         }
-    }
-
-    public void executeSyncPlayer(HumanEntity player, Runnable task, Runnable retired) {
-        player.getScheduler().run(plugin, scheduledTask -> task.run(), retired);
     }
 
     @Override

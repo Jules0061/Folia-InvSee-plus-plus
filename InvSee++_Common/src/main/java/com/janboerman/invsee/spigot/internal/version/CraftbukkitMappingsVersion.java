@@ -11,7 +11,6 @@ public class CraftbukkitMappingsVersion {
     private CraftbukkitMappingsVersion() {
     }
 
-    //https://hub.spigotmc.org/stash/projects/SPIGOT/repos/craftbukkit/browse/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java?until=5be2ddcbd57fc4a9e192cc398f9d881e917b0210&untilPath=src%2Fmain%2Fjava%2Forg%2Fbukkit%2Fcraftbukkit%2Futil%2FCraftMagicNumbers.java#162
     static final String _1_17   = "acd6e6c27e5a0a9440afba70a96c27c9";
     static final String _1_17_1 = "f0e3dfc7390de285a4693518dd5bd126";
     static final String _1_18   = "9e9fe6961a80f3e586c25601590b51ec";
@@ -46,14 +45,6 @@ public class CraftbukkitMappingsVersion {
     static final String _26_1_2 = _26_1_1;
     static final String _26_2 = _26_1_2;
 
-    /**
-     * Get the version of the mappings used by CraftBukkit. Note that this method only works on (forks of) CraftBukkit.
-     * @note org.bukkit.craftbukkit.util.CraftMagicNumbers#getMappingsVersion() was only introduced at CraftBukkit 1.14.
-     *       As of CraftBukkit 26.1 this method should no longer be used, since CraftBukkit now uses the Mojang mappings
-     *       at runtime.
-     * @param server the Server instance
-     * @return the mappings version (may be used for equality checking only), or null if running on CraftBukkit 1.13.2 or earlier.
-     */
     @SuppressWarnings("deprecation")
     static String getMappingsVersion(Server server) {
         UnsafeValues craftMagicNumbers = server.getUnsafe();

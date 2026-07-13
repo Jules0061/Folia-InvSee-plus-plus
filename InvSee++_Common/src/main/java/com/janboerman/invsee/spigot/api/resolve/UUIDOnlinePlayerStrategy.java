@@ -9,9 +9,6 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-/**
- * A strategy which resolves player's Unique IDs if they are online.
- */
 public class UUIDOnlinePlayerStrategy implements UUIDResolveStrategy {
 
     private final Server server;

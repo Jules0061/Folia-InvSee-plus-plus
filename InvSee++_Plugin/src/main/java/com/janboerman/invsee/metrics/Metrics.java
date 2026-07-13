@@ -35,12 +35,10 @@ public final class Metrics {
         org.bstats.bukkit.Metrics bStats;
         dev.faststats.bukkit.BukkitMetrics fastStats;
 
-        // TODO metric idea: api-consumers: other plugins which consume the InvSee++ api.
-        // TODO this would require an api-restructure though, much like https://github.com/Jannyboy11/InvSee-plus-plus/issues/92
         {
             final int pluginId = 9309;
             bStats = new org.bstats.bukkit.Metrics(plugin, pluginId);
-            bStats.addCustomChart(new org.bstats.charts.SimplePie("Back-end", () -> backEnd));  // bStats no longer allows dashes in chartIds in custom charts on their website?!
+            bStats.addCustomChart(new org.bstats.charts.SimplePie("Back-end", () -> backEnd));
             bStats.addCustomChart(new org.bstats.charts.SimplePie("downloadSource", () -> downloadSource));
             bStats.addCustomChart(new org.bstats.charts.SimplePie("uptime", () -> getTimePeriod(start).toString()));
             if (installationTime != null) {
@@ -74,13 +72,9 @@ public final class Metrics {
     private static String getBackendMetric(InvseePlusPlus plugin) {
         if (plugin.getApi() instanceof PerWorldInventorySeeApi) {
             return "PerWorldInventory";
-//            } else if (this.api instanceof MultiverseInventoriesSeeApi) {
-//                return "Multiverse-Inventories";
+
         }
-        //else if: MyWorlds
-        //else if: Separe-World-Items
-        //else if: PolyVerse (Lokka30/ArcanePlugins)
-        //else if: World (TheNextLvl) / PerWorlds (NonSwag)
+
         else {
             return "Vanilla";
         }

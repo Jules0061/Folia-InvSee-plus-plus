@@ -1,9 +1,6 @@
 package com.janboerman.invsee.spigot.api.template;
 
-/** Represents a slot of an {@link com.janboerman.invsee.spigot.api.EnderSpectatorInventory}. */
 public enum EnderChestSlot {
-
-    //count until 54 because of Purpur!
 
     CONTAINER_00,
     CONTAINER_01,
@@ -62,12 +59,10 @@ public enum EnderChestSlot {
 
     private static final EnderChestSlot[] VALUES = values();
 
-    /** Get the index of the {@link com.janboerman.invsee.spigot.api.EnderSpectatorInventory} at which this slot resides. */
     public int defaultIndex() {
        return ordinal();
     }
 
-    /** Get the slot given its index in the {@link com.janboerman.invsee.spigot.api.EnderSpectatorInventory}. */
     public static EnderChestSlot byDefaultIndex(int index) {
         if (0 <= index && index < 54) {
             return VALUES[index];

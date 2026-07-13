@@ -12,7 +12,7 @@ final class ErrorHelper {
     private static final int STACK_TRACE_LENGTH = Math.min(500, Integer.getInteger("faststats.stack-trace-length", 300));
     private static final int STACK_TRACE_LIMIT = Math.min(50, Integer.getInteger("faststats.stack-trace-limit", 15));
 
-    public static JsonObject compile(final Throwable error, /*@Nullable*/ final List<String> suppress, final boolean handled) {
+    public static JsonObject compile(final Throwable error,  final List<String> suppress, final boolean handled) {
         final JsonObject report = new JsonObject();
         final String message = getAnonymizedMessage(error);
 
@@ -40,8 +40,8 @@ final class ErrorHelper {
         return report;
     }
 
-    private static void appendCauseChain(/*@Nullable*/ Throwable cause, final List<String> parentStack,
-                                         /*@Nullable*/ final List<String> suppress, final JsonArray stacktrace) {
+    private static void appendCauseChain( Throwable cause, final List<String> parentStack,
+                                          final List<String> suppress, final JsonArray stacktrace) {
         final ArrayList<String> toSuppress = new ArrayList<>(parentStack);
         if (suppress != null) toSuppress.addAll(suppress);
         final Set<Throwable> visited = Collections.<Throwable>newSetFromMap(new IdentityHashMap<>());
@@ -129,7 +129,7 @@ final class ErrorHelper {
         return isSameLoader(loader, error, Collections.newSetFromMap(new IdentityHashMap<>()));
     }
 
-    private static boolean isSameLoader(final ClassLoader loader, /*@Nullable*/ final Throwable error, final Set<Throwable> visited) {
+    private static boolean isSameLoader(final ClassLoader loader,  final Throwable error, final Set<Throwable> visited) {
         if (error == null || !visited.add(error)) return false;
 
         final StackTraceElement[] stackTrace = error.getStackTrace();
@@ -186,21 +186,21 @@ final class ErrorHelper {
     private static final Pattern IPV4_PATTERN = Pattern.compile(
             "\\b(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\b");
     private static final Pattern IPV6_PATTERN = Pattern.compile(
-            "(?i)\\b([0-9a-f]{1,4}:){7}[0-9a-f]{1,4}\\b|" +                      // Full form
-                    "(?i)\\b([0-9a-f]{1,4}:){1,7}:\\b|" +                        // Trailing ::
-                    "(?i)\\b([0-9a-f]{1,4}:){1,6}:[0-9a-f]{1,4}\\b|" +           // :: in middle (1 group after)
-                    "(?i)\\b([0-9a-f]{1,4}:){1,5}(:[0-9a-f]{1,4}){1,2}\\b|" +    // :: in middle (2 groups after)
-                    "(?i)\\b([0-9a-f]{1,4}:){1,4}(:[0-9a-f]{1,4}){1,3}\\b|" +    // :: in middle (3 groups after)
-                    "(?i)\\b([0-9a-f]{1,4}:){1,3}(:[0-9a-f]{1,4}){1,4}\\b|" +    // :: in middle (4 groups after)
-                    "(?i)\\b([0-9a-f]{1,4}:){1,2}(:[0-9a-f]{1,4}){1,5}\\b|" +    // :: in middle (5 groups after)
-                    "(?i)\\b[0-9a-f]{1,4}:(:[0-9a-f]{1,4}){1,6}\\b|" +           // :: in middle (6 groups after)
-                    "(?i)\\b:(:[0-9a-f]{1,4}){1,7}\\b|" +                        // Leading ::
-                    "(?i)\\b::([0-9a-f]{1,4}:){0,5}[0-9a-f]{1,4}\\b|" +          // :: at start
-                    "(?i)\\b::\\b");                                             // Just ::
+            "(?i)\\b([0-9a-f]{1,4}:){7}[0-9a-f]{1,4}\\b|" +
+                    "(?i)\\b([0-9a-f]{1,4}:){1,7}:\\b|" +
+                    "(?i)\\b([0-9a-f]{1,4}:){1,6}:[0-9a-f]{1,4}\\b|" +
+                    "(?i)\\b([0-9a-f]{1,4}:){1,5}(:[0-9a-f]{1,4}){1,2}\\b|" +
+                    "(?i)\\b([0-9a-f]{1,4}:){1,4}(:[0-9a-f]{1,4}){1,3}\\b|" +
+                    "(?i)\\b([0-9a-f]{1,4}:){1,3}(:[0-9a-f]{1,4}){1,4}\\b|" +
+                    "(?i)\\b([0-9a-f]{1,4}:){1,2}(:[0-9a-f]{1,4}){1,5}\\b|" +
+                    "(?i)\\b[0-9a-f]{1,4}:(:[0-9a-f]{1,4}){1,6}\\b|" +
+                    "(?i)\\b:(:[0-9a-f]{1,4}){1,7}\\b|" +
+                    "(?i)\\b::([0-9a-f]{1,4}:){0,5}[0-9a-f]{1,4}\\b|" +
+                    "(?i)\\b::\\b");
     private static final Pattern USER_HOME_PATH_PATTERN = Pattern.compile(
-            "(/home/)[^/\\s]+" +                                                 // Linux: /home/username
-                    "|(/Users/)[^/\\s]+" +                                       // macOS: /Users/username
-                    "|((?i)[A-Z]:\\\\Users\\\\)[^\\\\\\s]+");                    // Windows: A-Z:\\Users\\username
+            "(/home/)[^/\\s]+" +
+                    "|(/Users/)[^/\\s]+" +
+                    "|((?i)[A-Z]:\\\\Users\\\\)[^\\\\\\s]+");
 
     private static String anonymize(String message) {
         message = IPV4_PATTERN.matcher(message).replaceAll("[IP hidden]");
@@ -211,7 +211,7 @@ final class ErrorHelper {
         return message;
     }
 
-    private static /*@Nullable*/ String getAnonymizedMessage(final Throwable error) {
+    private static  String getAnonymizedMessage(final Throwable error) {
         final String message = error.getMessage();
         if (message == null) return null;
         final String truncated = message.length() > MESSAGE_LENGTH

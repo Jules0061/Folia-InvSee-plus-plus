@@ -59,23 +59,6 @@ public class PerWorldInventoryHook {
         return pwiManagedInventories() || pwiManagedEnderChests();
     }
 
-    /*
-     * Here is what we need to do:
-     *
-     * for offline players - save and load their inventories from PWI storage
-     *
-     * listen on InventoryDataLoadEvent? don't think that is necessary.
-     *
-     * adjust /invsee and /endersee to take take extra parameters (this is going to be annoying for paper's async tabcompleter urghh)
-     * I'm thinking that I'm going to do it json-like, e.g.: PerWorldInventory{group=default} or PWI{world=world_nether,gamemode=survival}
-     *
-     * take into account that PerWorldInventory has settings whether to manage inventories and/or enderchests
-     *
-     * take into account that PerWorldInventory has a feature that groups unmanaged world into one group (or not, if it's disabled in its settings)
-     *
-     * take into account that PerWorldInventory has settings whether to have inventories per gamemode (and that there is a bypass permission for this too!)
-     */
-
     protected PerWorldInventoryAPI getPerWorldInventoryAPI() {
         return api;
     }
@@ -159,7 +142,7 @@ public class PerWorldInventoryHook {
 
     protected Cache<ProfileKey, PlayerProfile> getProfileCache() {
         if (profileCache != null) return profileCache;
-        
+
         try {
             Field field = ProfileManager.class.getDeclaredField("profileCache");
             field.setAccessible(true);
@@ -177,10 +160,10 @@ public class PerWorldInventoryHook {
             return cache.get(profileKey, () -> {
                 PlayerProfile loaded = getDataSource().getPlayer(profileKey, player);
                 if (loaded != null) {
-                    //loaded from flatfile (or mysql in the future?)
+
                     return loaded;
                 } else {
-                    //create fresh!
+
                     return getProfileFactory().create(player);
                 }
             });
@@ -191,7 +174,7 @@ public class PerWorldInventoryHook {
     }
 
     public PlayerProfile getOrCreateProfile(Player player, Group group, GameMode gameMode) {
-        if (!pwiInventoriesPerGameMode()) gameMode = GameMode.SURVIVAL; //fuck you Kotlin, you can't re-assign your method arguments, can you?! :D
+        if (!pwiInventoriesPerGameMode()) gameMode = GameMode.SURVIVAL;
 
         ProfileKey profileKey = new ProfileKey(player.getUniqueId(), group, gameMode);
         return getOrCreateProfile(player, profileKey);

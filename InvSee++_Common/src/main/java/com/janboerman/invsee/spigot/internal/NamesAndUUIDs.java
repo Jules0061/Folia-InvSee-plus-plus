@@ -21,16 +21,8 @@ import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 
-/**
- * Cache for player usernames and unique IDs.
- * Instance can be obtained via {@link InvseeAPI#namesAndUuidsLookup()}.
- *
- * @apiNote this API is not stable (yet).
- * @see <a href="https://github.com/Jannyboy11/InvSee-plus-plus/wiki/Advanced-usage#changing-how-uuid-lookups-work-unstable-api">Changing how UUID lookups work</a>
- */
 public class NamesAndUUIDs {
 
-    //static members
     protected static final boolean SPIGOT;
     protected static final boolean PAPER;
     static {
@@ -71,9 +63,8 @@ public class NamesAndUUIDs {
     private final Plugin plugin;
     private final Scheduler scheduler;
 
-    /** The list of strategies used to resolve players' unique IDs. Strategies are attempted in order. */
     public final List<UUIDResolveStrategy> uuidResolveStrategies;
-    /** The list of strategies used to resolve players' usernames. Strategies are attempted in order. */
+
     public final List<NameResolveStrategy> nameResolveStrategies;
 
     private boolean bungeeCord = false, bungeeCordOnline = false;
@@ -85,7 +76,6 @@ public class NamesAndUUIDs {
     private final EnumMap<ResolveStrategyType, UUIDResolveStrategy> availableUuidResolveStrategies = new EnumMap<>(ResolveStrategyType.class);
     private final EnumMap<ResolveStrategyType, NameResolveStrategy> availableNameResolveStrategies = new EnumMap<>(ResolveStrategyType.class);
 
-    /** @deprecated internal api */
     @Deprecated
     public NamesAndUUIDs(Plugin plugin, Scheduler scheduler) {
         Server server = plugin.getServer();
@@ -96,7 +86,7 @@ public class NamesAndUUIDs {
             Configuration spigotConfig = plugin.getServer().spigot().getConfig();
             ConfigurationSection settings = spigotConfig.getConfigurationSection("settings");
             if (settings != null) {
-                this.bungeeCord = this.bungeeCordOnline = settings.getBoolean("bungeecord", false); //assume bungee in online mode since Spigot does not specify this (Paper does).
+                this.bungeeCord = this.bungeeCordOnline = settings.getBoolean("bungeecord", false);
             }
         }
 
@@ -105,19 +95,19 @@ public class NamesAndUUIDs {
                 YamlConfiguration paperConfig = plugin.getServer().spigot().getPaperConfig();
                 ConfigurationSection proxiesSection = paperConfig.getConfigurationSection("proxies");
                 if (proxiesSection != null) {
-                    //bungee
+
                     ConfigurationSection bungeeSection = proxiesSection.getConfigurationSection("bungee-cord");
                     if (bungeeSection != null) {
                         this.bungeeCordOnline = this.bungeeCord && bungeeSection.getBoolean("online-mode", false);
                     }
-                    //velocity
+
                     ConfigurationSection velocitySection = proxiesSection.getConfigurationSection("velocity");
                     if (velocitySection != null) {
                         this.velocity = velocitySection.getBoolean("enabled", false);
                         this.velocityOnline = this.velocity && velocitySection.getBoolean("online-mode", false);
                     }
                 }
-            } catch (UnsupportedOperationException e/*can happen on Glowstone*/) {
+            } catch (UnsupportedOperationException e) {
                 plugin.getLogger().log(Level.WARNING, "Server acts as if it supports the paper config api, but it actually doesn't!", e);
             }
         }
@@ -128,7 +118,6 @@ public class NamesAndUUIDs {
         this.uuidResolveTypes = ResolveStrategyType.defaultStrategies(onlineMode(server));
         this.nameResolveTypes = ResolveStrategyType.defaultStrategies(onlineMode(server));
 
-        // register available resolve strategies.
         availableUuidResolveStrategies.put(ResolveStrategyType.ONLINE_PLAYER, new UUIDOnlinePlayerStrategy(server, scheduler::executeSyncGlobal));
         availableNameResolveStrategies.put(ResolveStrategyType.ONLINE_PLAYER, new NameOnlinePlayerStrategy(server, scheduler::executeSyncGlobal));
 
@@ -137,7 +126,7 @@ public class NamesAndUUIDs {
 
         if (PAPER) {
             availableUuidResolveStrategies.put(ResolveStrategyType.PAPER_OFFLINE_PLAYER_CACHE, new UUIDPaperCacheStrategy(plugin, scheduler));
-            // Paper does not provide Server#getOfflinePlayerIfCached with a UUID argument.. >:(
+
         }
 
         availableUuidResolveStrategies.put(ResolveStrategyType.PERMISSION_PLUGIN, new UUIDPermissionPluginStrategy(plugin, scheduler));
@@ -145,10 +134,7 @@ public class NamesAndUUIDs {
 
         if (bungeeCord || velocity) {
             availableUuidResolveStrategies.put(ResolveStrategyType.PROXY, new UUIDBungeeCordStrategy(plugin, scheduler));
-            //there is no BungeeCord plugin message subchannel which can get a player name given a uuid.
-            //the only way to do that currently is to 'get' a list of all players, and for every player in that list
-            //request the uuid. If one matches the argument uuid, then that is the one.
-            //this is too expensive for my tastes so I'm not going to implement a NameBungeeCordStrategy for now.
+
         }
 
         if (onlineMode(server)) {
@@ -198,35 +184,29 @@ public class NamesAndUUIDs {
         }
     }
 
-    /** Is the server in online mode? This method will consider servers behind a proxy in online mode as online. */
     public final boolean onlineMode(Server server) {
         return server.getOnlineMode() || bungeeCordOnline || velocityOnline;
     }
 
-    /** Get the known mappings from username to unique ID. */
     public Map<String, UUID> getUuidCache() {
         return uuidCacheView;
     }
 
-    /** Get the known mappings from UUID to username. */
     public Map<UUID, String> getUserNameCache() {
         return userNameCacheView;
     }
 
-    /** Cache a player's unique ID and username. */
     public void cacheNameAndUniqueId(UUID uuid, String userName) {
         this.userNameCache.put(uuid, userName);
         this.uuidCache.put(userName, uuid);
     }
 
-    /** Resolve a player's unique ID, given their username. */
     public CompletableFuture<Optional<UUID>> resolveUUID(String username) {
         CompletableFuture<Optional<UUID>> result = resolveUUID(username, new SynchronizedIterator<>(uuidResolveStrategies.iterator()));
         result.thenAccept(optUuid -> optUuid.ifPresent(uuid -> cacheNameAndUniqueId(uuid, username)));
         return result;
     }
 
-    /** Resolve a player's username, given their unique ID. */
     public CompletableFuture<Optional<String>> resolveUserName(UUID uniqueId) {
         CompletableFuture<Optional<String>> result = resolveUserName(uniqueId, new SynchronizedIterator<>(nameResolveStrategies.iterator()));
         result.thenAccept(optName -> optName.ifPresent(name -> cacheNameAndUniqueId(uniqueId, name)));

@@ -46,7 +46,7 @@ public class KnownPlayersProvider implements OfflinePlayerProvider {
 			try {
 				readName(result, filePath);
 			} catch (IOException | ReportedException e1) {
-				//did not work, try again on main thread:
+
 				UUID playerId = uuidFromFileName(playerFile.getName());
 				Executor executor = playerId == null ? scheduler::executeSyncGlobal : runnable -> scheduler.executeSyncPlayer(playerId, runnable, null);
 
@@ -78,7 +78,7 @@ public class KnownPlayersProvider implements OfflinePlayerProvider {
 			try {
 				readName(prefix, result, filePath);
 			} catch (IOException | ReportedException e1) {
-				//did not work, try again on main thread:
+
 				UUID playerId = uuidFromFileName(playerFile.getName());
 				Executor executor = playerId == null ? scheduler::executeSyncGlobal : runnable -> scheduler.executeSyncPlayer(playerId, runnable, null);
 
@@ -125,4 +125,3 @@ public class KnownPlayersProvider implements OfflinePlayerProvider {
 	}
 
 }
-

@@ -31,7 +31,7 @@ public class NameSearchSaveFilesStrategy implements NameResolveStrategy {
 		File playerDirectory = HybridServerSupport.getPlayerDir(worldNBTStorage);
 		if (!playerDirectory.exists() || !playerDirectory.isDirectory())
 			return CompletedEmpty.the();
-		
+
 		return CompletableFuture.supplyAsync(() -> {
 					return HybridServerSupport.load(worldNBTStorage, "InvSee++ Player", uniqueId.toString(), ThrowingProblemReporter.INSTANCE, RegistryAccess.EMPTY)
 							.flatMap(playerTag -> playerTag.child("bukkit"))

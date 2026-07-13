@@ -46,25 +46,25 @@ public class UsernameTrieTest {
         trie.insert("Jankebal", 4);
 
         final StringJoiner sj1 = new StringJoiner(" ");
-        trie.traverse("", (string, idx) -> sj1.add(string + ":" + idx));        //empty string is prefix of all strings
+        trie.traverse("", (string, idx) -> sj1.add(string + ":" + idx));
         assertEquals("Jan:1 Jankebal:4 Janko:3 Jankoekenpan:2 Jannyboy11:0", sj1.toString());
 
         final StringJoiner sj2 = new StringJoiner(" ");
-        trie.traverse("Jank", (string, idx) -> sj2.add(string + ":" + idx));    //non-existing word
+        trie.traverse("Jank", (string, idx) -> sj2.add(string + ":" + idx));
         assertEquals("Jankebal:4 Janko:3 Jankoekenpan:2", sj2.toString());
 
         final StringJoiner sj3 = new StringJoiner(" ");
-        trie.traverse("Jan", (string, idx) -> sj3.add(string + ":" + idx));     //existing word that is non-empty
+        trie.traverse("Jan", (string, idx) -> sj3.add(string + ":" + idx));
         assertEquals("Jan:1 Jankebal:4 Janko:3 Jankoekenpan:2 Jannyboy11:0", sj3.toString());
 
         final StringJoiner sj4 = new StringJoiner(" ");
-        trie.traverse("Janko", (string, idx) -> sj4.add(string + ":" + idx));     //existing word that is non-empty that is not a prefix of everything
+        trie.traverse("Janko", (string, idx) -> sj4.add(string + ":" + idx));
         assertEquals("Janko:3 Jankoekenpan:2", sj4.toString());
     }
 
     @Test
     public void testInserts() {
-        //example from Wikipedia: https://en.wikipedia.org/wiki/Radix_tree
+
         final String[] words = new String[] {"romane", "romanus", "romulus", "rubens", "ruber", "rubicon", "rubicundus"};
 
         UsernameTrie<Integer> trie = new UsernameTrie<>();
@@ -94,10 +94,6 @@ public class UsernameTrieTest {
         trie.traverse("", (str, v) -> sj1.add(str));
         assertEquals("PiEs Piet Pizza", sj1.toString());
 
-        // TODO https://github.com/Jannyboy11/InvSee-plus-plus/issues/147
-//        StringJoiner sj2 = new StringJoiner(" ");
-//        trie.traverse("Pie", (str, v) -> sj2.add(str));
-//        assertEquals("PiEs Piet", sj2.toString());
     }
 
     @Test
@@ -132,7 +128,7 @@ public class UsernameTrieTest {
         trie.traverse("", (string, idx) -> sj2.add(string + ":" + idx));
         assertEquals("Jankebal:4 Jankoekenpan:2 Jannyboy11:0", sj2.toString());
 
-        trie.delete("Ja"); //non-existing key
+        trie.delete("Ja");
 
         final StringJoiner sj3 = new StringJoiner(" ");
         trie.traverse("", (string, idx) -> sj3.add(string + ":" + idx));
@@ -170,11 +166,10 @@ public class UsernameTrieTest {
 
         java.util.concurrent.atomic.AtomicInteger counter = new java.util.concurrent.atomic.AtomicInteger(0);
         long begin = System.nanoTime();
-        trie.traverse("", (string, v) -> { /*System.out.println(string);*/ counter.incrementAndGet(); });
+        trie.traverse("", (string, v) -> {  counter.incrementAndGet(); });
         long end = System.nanoTime();
         assertEquals(set.size(), counter.get());
-        //System.out.println("Printing took " + ((end - begin) / 1000) + " µs");
-        //takes about 0.8 seconds on my laptop! :)
+
     }
 
     private final java.util.Random random = new java.util.Random();

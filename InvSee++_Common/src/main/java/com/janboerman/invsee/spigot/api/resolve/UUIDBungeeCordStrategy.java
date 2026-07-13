@@ -18,11 +18,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 
-/**
- * Strategy which resolves Unique IDs using BungeeCord's plugin messaging channel.
- *
- * @see <a href="https://www.spigotmc.org/wiki/bukkit-bungee-plugin-messaging-channel/#uuidother">BungeeCord Plugin Messagin Channel</a> on the SpigotMC wiki
- */
 public class UUIDBungeeCordStrategy implements UUIDResolveStrategy, PluginMessageListener {
 
     private static final String BUNGEECORD_CHANNEL = "BungeeCord";
@@ -65,7 +60,7 @@ public class UUIDBungeeCordStrategy implements UUIDResolveStrategy, PluginMessag
 
             player.sendPluginMessage(plugin, BUNGEECORD_CHANNEL, pluginMessage);
             CompletableFuture<Optional<UUID>> _future = new CompletableFuture<>();
-            //future.orTimeout(5, TimeUnit.SECONDS); //TODO can we multi-release this? we need access to a Scheduler though.
+
             scheduler.executeLaterAsync(() -> _future.cancel(true), 20 * 5);
             CompletableFuture<Optional<UUID>> future = _future.exceptionally(throwable -> {
                 if (!(throwable instanceof CancellationException || throwable instanceof TimeoutException)) {
@@ -96,7 +91,7 @@ public class UUIDBungeeCordStrategy implements UUIDResolveStrategy, PluginMessag
                     }
                 }
             } catch (IOException e) {
-                //nothing we can do here - just let the future complete after the 5 second timeout.
+
             } finally {
                 try {
                     dataInputStream.close();

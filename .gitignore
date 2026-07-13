@@ -1,11 +1,12 @@
 #IntelliJ
-.idea/*
+.idea/workspace.xml
+.idea/shelf/
 **.iml
 .bsp
 .scala-build
 
 #Maven
-target/*
+**/target/
 
 #paper-nms-maven-plugin
 **/.paper-nms

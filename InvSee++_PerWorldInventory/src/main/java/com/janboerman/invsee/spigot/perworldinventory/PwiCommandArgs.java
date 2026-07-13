@@ -72,9 +72,6 @@ public class PwiCommandArgs {
     }
 
     public static List<String> complete(final String argument, PerWorldInventoryHook hook) {
-        //TODO this can be called asynchronously!
-        //TODO I don't think this is threadsafe.
-        //TODO if we are called async, then the should wait for the primary thread, execute the logic on there, and then join.
 
         if (argument.length() < 4) return listOf("PWI{");
         if (!StringHelper.startsWithIgnoreCase(argument, "PWI{")) {
@@ -104,16 +101,16 @@ public class PwiCommandArgs {
         }
 
         PwiCommandArgs result = new PwiCommandArgs();
-        parseProperties(result, propertyList, hook); //ignore error message
+        parseProperties(result, propertyList, hook);
 
         String lastProperty = properties[properties.length - 1];
         int stripLength = lastProperty.length();
         boolean endsWithComma = argument.endsWith(",");
-        if (endsWithComma) stripLength += 1; //not sure whether this is correct.
+        if (endsWithComma) stripLength += 1;
         String bufferBeforeLastProperty = argument.substring(0, argument.length() - stripLength);
 
         if (endsWithComma) {
-            //we end with a comma, complete a new property
+
             List<String> everything = new ArrayList<>(9);
             if (result.group == null) {
                 groupNames.stream().map(gn -> argument + "group=" + gn).forEach(everything::add);
@@ -127,26 +124,25 @@ public class PwiCommandArgs {
             return everything;
         }
 
-        //we don't end with a comma - complete the property
         String[] propKeyValue = lastProperty.split("=", 2);
         if (propKeyValue.length == 0 || (propKeyValue.length == 1 && propKeyValue[0].isEmpty())) {
             if (result.group == null) {
-                //tab the group
+
                 return groupNames.stream().map(groupName -> bufferBeforeLastProperty + "group=" + groupName)
                         .flatMap(buf -> Stream.of(buf + "}", buf + ","))
                         .collect(Collectors.toList());
             } else if (result.world == null) {
-                //tab the world
+
                 return worldNames.stream().map(worldName -> bufferBeforeLastProperty + "world=" + worldName)
                         .flatMap(buf -> Stream.of(buf + "}", buf + ","))
                         .collect(Collectors.toList());
             } else if (result.gameMode == null) {
-                //tab the gamemode
+
                 return gameModes.stream().map(gameMode -> bufferBeforeLastProperty + "gamemode=" + gameMode)
                         .flatMap(buf -> Stream.of(buf + "}", buf + ","))
                         .collect(Collectors.toList());
             } else {
-                //all properties are specified - we are done!
+
                 return listOf(argument + "}");
             }
         }
@@ -185,7 +181,7 @@ public class PwiCommandArgs {
                         .flatMap(buf -> Stream.of(buf + "}", buf + ","))
                         .collect(Collectors.toList());
             default:
-                //bogus property - just send every possible option.
+
                 Collection<String> everything = new ArrayList<>(9);
                 if (result.group == null) everything.addAll(groupNames.stream().map(gn -> "group=" + gn).collect(Collectors.toList()));
                 if (result.world == null) everything.addAll(worldNames.stream().map(wn -> "world=" + wn).collect(Collectors.toList()));

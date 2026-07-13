@@ -26,7 +26,7 @@ public abstract class Maybe<T> {
         private static final Just NULL = new Just(null);
         private final T value;
         Just(T value) {
-            this.value = value; //null is allowed!
+            this.value = value;
         }
 
         public T get() {

@@ -39,26 +39,6 @@ final class ResponseUtils {
         }
     }
 
-    /*
-    static JSONArray readJSONArray(HttpResponse<InputStream> response) {
-        Charset charset = charsetFromHeaders(response.headers());
-        try (InputStream inputStream = response.body();
-             InputStreamReader inputStreamReader = new InputStreamReader(inputStream, charset)) {
-
-            Object json = new JSONParser().parse(inputStreamReader);
-            if (json instanceof JSONArray) {
-                return (JSONArray) json;
-            } else {
-                throw new RuntimeException("Expected response to be represented as a JSON Array, instead we got: " + json);
-            }
-        } catch (IOException ioe) {
-            throw new RuntimeException("Could not read http response body", ioe);
-        } catch (ParseException pe) {
-            throw new RuntimeException("Invalid JSON from Mojang api", pe);
-        }
-    }
-    */
-
     static Charset charsetFromHeaders(HttpHeaders headers) {
         Optional<String> optionalContentType = headers.firstValue("Content-Type");
         if (optionalContentType.isPresent()) {
@@ -74,7 +54,6 @@ final class ResponseUtils {
             }
         }
 
-        //fallback
         return StandardCharsets.UTF_8;
     }
 

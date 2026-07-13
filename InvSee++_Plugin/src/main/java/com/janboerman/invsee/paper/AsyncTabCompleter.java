@@ -40,20 +40,20 @@ public class AsyncTabCompleter implements Listener {
         this.knownLabels.addAll(listOf("invsee", "inventorysee", "isee", "endersee", "enderchestsee", "esee"));
 
         String pluginNameLower = "invseeplusplus";
-        List<String> withPrefix = this.knownLabels.stream().map(s -> pluginNameLower + ":" + s).collect(Collectors.toList());
+        List<String> withPrefix = this.knownLabels.stream().map(s -> pluginNameLower + ":" + s).toList();
         this.knownLabels.addAll(withPrefix);
 
         scheduler.executeAsync(() -> playerDatabase.getAll(this::enqueue));
         scheduler.executeSyncGlobalRepeatedly(() -> {
             Set<UUID> tabcompleters = plugin.getServer().getPluginManager()
                     .getPermissionSubscriptions(InvseePlusPlus.TABCOMPLETION_PERMISSION).stream()
-                    .filter(permissible -> permissible.hasPermission(InvseePlusPlus.TABCOMPLETION_PERMISSION)) // necessary because of negative permissions :-)
+                    .filter(permissible -> permissible.hasPermission(InvseePlusPlus.TABCOMPLETION_PERMISSION))
                     .filter(permissible -> permissible instanceof Player)
                     .map(permissible -> ((Player) permissible).getUniqueId())
                     .collect(Collectors.toSet());
             playersWhoCanTabComplete.addAll(tabcompleters);
             playersWhoCanTabComplete.retainAll(tabcompleters);
-        }, 0L, 20L * 60); //every minute
+        }, 0L, 20L * 60);
     }
 
     private void enqueue(String name) {
@@ -72,12 +72,6 @@ public class AsyncTabCompleter implements Listener {
 
     @EventHandler
     public void onTabComplete(AsyncTabCompleteEvent event) {
-        // Can be called from multiple threads. By the looks of it these are Netty threads.
-        //if we can adjust the UsernameTrie implementation such that lookups done for 'get' and 'tabcompletion' don't restructure the internal tree structure,
-        //then we could use a ReentrantReadWriteLock to protect the UsernameTrie.
-        //alternatively, we could just make the UsernameTrie implementation itself thread-safe?
-        //but I don't think it's such a big problem right now - incorrect tabcompletions are not the end of the world.
-        // As of InvSee++ v0.19.19, the UsernameTrie implementation itself was made thread-safe
 
         final String buffer = event.getBuffer();
 
@@ -130,8 +124,7 @@ public class AsyncTabCompleter implements Listener {
                         event.setCompletions(playerNames);
                         event.setHandled(true);
                     }
-                } else if (split.length == 3 && api instanceof PerWorldInventorySeeApi) {
-                    PerWorldInventorySeeApi pwiApi = (PerWorldInventorySeeApi) api;
+                } else if (split.length == 3 && api instanceof PerWorldInventorySeeApi pwiApi) {
                     String pwiArgument = split[2];
                     List<String> pwiCompletions = PwiCommandArgs.complete(pwiArgument, pwiApi.getHook());
                     event.setCompletions(pwiCompletions);

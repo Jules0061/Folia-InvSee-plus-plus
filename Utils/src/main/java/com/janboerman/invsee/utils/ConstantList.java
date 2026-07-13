@@ -16,8 +16,7 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-/** @deprecated Use {@link java.util.Collections#nCopies(int, Object)} instead. */
-@Deprecated //forRemoval = true
+@Deprecated
 public final class ConstantList<T> implements java.util.List<T> {
 
     private final int size;
@@ -65,7 +64,7 @@ public final class ConstantList<T> implements java.util.List<T> {
     public <U> U[] toArray(U[] array) {
         if (array.length >= size) {
             Arrays.fill(array, 0, size, constant);
-            //weird specification from the java.util.List javadoc!
+
             if (array.length > size) array[size] = null;
         } else {
             array = (U[]) Array.newInstance(array.getClass().getComponentType(), size);
@@ -74,7 +73,6 @@ public final class ConstantList<T> implements java.util.List<T> {
         return array;
     }
 
-    //@Override
     public <U> U[] toArray(IntFunction<U[]> generator) {
         U[] arr = generator.apply(size);
         Arrays.fill(arr, constant);
@@ -189,7 +187,7 @@ public final class ConstantList<T> implements java.util.List<T> {
             public T next() {
                 cursor += 1;
                 return ConstantList.this.constant;
-                //normally we would move the cursor *after* the next call, but since our element is constant, we can just do it *before*! :)
+
             }
 
             @Override
@@ -297,7 +295,7 @@ public final class ConstantList<T> implements java.util.List<T> {
 
         @Override
         public Comparator<? super T> getComparator() {
-            //sorted by natural order
+
             return null;
         }
     }

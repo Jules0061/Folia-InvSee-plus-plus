@@ -9,11 +9,6 @@ import java.lang.annotation.Target;
 
 import static java.lang.annotation.ElementType.*;
 
-/**
- * An annotation to mark a token.
- *
- * @since 0.1.0
- */
 @NonNls
 @Pattern(Token.PATTERN)
 @Retention(RetentionPolicy.CLASS)

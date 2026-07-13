@@ -11,7 +11,7 @@ public class FakeCraftHumanEntity extends CraftHumanEntity {
 
     @Override
     public FakeEntityHuman getHandle() {
-        //circumvent Folia's thread check by not calling the super.getHandle() method.
+
         return (FakeEntityHuman) this.entity;
     }
 
