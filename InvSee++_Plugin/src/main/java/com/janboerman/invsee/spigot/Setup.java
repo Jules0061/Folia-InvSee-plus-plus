@@ -60,7 +60,7 @@ final class SetupSupport {
 
     static final SupportedServerSoftware<SetupProvider> SUPPORTED = new SupportedServerSoftware<>();
     static {
-        SUPPORTED.registerSupportedVersion((p, l, s, c) -> new Impl_Paper_1_21_11(p, l, s, c), ServerSoftware.PAPER_1_21_11);
+        SUPPORTED.registerSupportedVersion(Impl_Paper_1_21_11::new, ServerSoftware.PAPER_1_21_11);
     }
 
     private SetupSupport() {
