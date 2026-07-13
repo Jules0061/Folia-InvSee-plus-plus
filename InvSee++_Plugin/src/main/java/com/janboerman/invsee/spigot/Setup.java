@@ -11,13 +11,13 @@ import org.bukkit.plugin.Plugin;
 
 public interface Setup {
 
-    public InvseePlatform platform();
+    InvseePlatform platform();
 
-    public default OfflinePlayerProvider offlinePlayerProvider() {
+    default OfflinePlayerProvider offlinePlayerProvider() {
         return OfflinePlayerProvider.Dummy.INSTANCE;
     }
 
-    public static Setup setup(Plugin plugin, Scheduler scheduler, NamesAndUUIDs lookup, OpenSpectatorsCache cache) {
+    static Setup setup(Plugin plugin, Scheduler scheduler, NamesAndUUIDs lookup, OpenSpectatorsCache cache) {
         Server server = plugin.getServer();
         ServerSoftware serverSoftware = ServerSoftware.detect(server);
         plugin.getLogger().info("Detected server software: " + serverSoftware);
@@ -58,7 +58,7 @@ class SetupImpl implements Setup {
 
     static SupportedServerSoftware<SetupProvider> SUPPORTED = new SupportedServerSoftware<>();
     static {
-        SUPPORTED.registerSupportedVersion((p, l, s, c) -> new Impl_Paper_1_21_11(p, l, s, c), ServerSoftware.PAPER_1_21_11);
+        SUPPORTED.registerSupportedVersion(Impl_Paper_1_21_11::new, ServerSoftware.PAPER_1_21_11);
     }
 
     private final InvseePlatform platform;
@@ -81,5 +81,5 @@ class SetupImpl implements Setup {
 }
 
 interface SetupProvider {
-    public Setup provide(Plugin plugin, NamesAndUUIDs lookup, Scheduler scheduler, OpenSpectatorsCache cache);
+    Setup provide(Plugin plugin, NamesAndUUIDs lookup, Scheduler scheduler, OpenSpectatorsCache cache);
 }

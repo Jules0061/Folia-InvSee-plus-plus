@@ -11,6 +11,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,7 +29,7 @@ public class InvseeTabCompleter implements TabCompleter {
     }
 
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         if (!sender.hasPermission(InvseePlusPlus.TABCOMPLETION_PERMISSION)) return emptyList();
 
         InvseeAPI api = plugin.getApi();
@@ -45,7 +46,7 @@ public class InvseeTabCompleter implements TabCompleter {
                     if (player.canSee(onlinePlayer))
                         onlineNames.add(onlinePlayer.getName());
 
-            if (plugin.offlinePlayerSupport() && plugin.offlinePlayerSupport()) {
+            if (plugin.offlinePlayerSupport() && plugin.tabCompleteOfflinePlayers()) {
                 Set<String> offlineNames = api.getUuidCache().keySet();
 
                 SortedSet<String> allNames = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
@@ -91,8 +92,7 @@ public class InvseeTabCompleter implements TabCompleter {
                 return onlineNames;
             }
 
-        } else if (args.length == 2 && api instanceof PerWorldInventorySeeApi) {
-            PerWorldInventorySeeApi pwiApi = (PerWorldInventorySeeApi) api;
+        } else if (args.length == 2 && api instanceof PerWorldInventorySeeApi pwiApi) {
             String pwiArgument = args[1];
             return PwiCommandArgs.complete(pwiArgument, pwiApi.getHook());
         }

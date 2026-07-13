@@ -1,7 +1,6 @@
 package com.janboerman.invsee.spigot;
 
 import com.janboerman.invsee.spigot.api.Scheduler;
-import org.bukkit.entity.HumanEntity;
 
 import java.util.UUID;
 
@@ -18,10 +17,6 @@ public class DefaultScheduler implements Scheduler {
 
     @Override
     public void executeSyncPlayer(UUID playerId, Runnable task, Runnable retired) {
-        executeSync(task);
-    }
-
-    public void executeSyncPlayer(HumanEntity player, Runnable task, Runnable retired) {
         executeSync(task);
     }
 

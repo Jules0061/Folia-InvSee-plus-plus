@@ -7,11 +7,11 @@ import com.janboerman.invsee.spigot.api.CreationOptions;
 import com.janboerman.invsee.spigot.api.InvseeAPI;
 import com.janboerman.invsee.spigot.api.OfflinePlayerProvider;
 import com.janboerman.invsee.spigot.api.Title;
+import org.jetbrains.annotations.NotNull;
 import com.janboerman.invsee.spigot.api.logging.LogGranularity;
 import com.janboerman.invsee.spigot.api.logging.LogOptions;
 import com.janboerman.invsee.spigot.api.logging.LogTarget;
 import com.janboerman.invsee.spigot.api.placeholder.PlaceholderPalette;
-import com.janboerman.invsee.spigot.api.target.Target;
 /*
 import com.janboerman.invsee.spigot.multiverseinventories.MultiverseInventoriesHook;
 import com.janboerman.invsee.spigot.multiverseinventories.MultiverseInventoriesSeeApi;
@@ -29,7 +29,6 @@ import com.janboerman.invsee.spigot.perworldinventory.PerWorldInventoryHook;
 import com.janboerman.invsee.spigot.perworldinventory.PerWorldInventorySeeApi;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
@@ -45,7 +44,6 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class InvseePlusPlus extends JavaPlugin implements com.janboerman.invsee.spigot.api.InvseePlusPlus {
 
@@ -55,7 +53,6 @@ public class InvseePlusPlus extends JavaPlugin implements com.janboerman.invsee.
 
     private InvseeAPI api;
     private InvseePlatform platform;
-    @Deprecated/*(forRemoval = true)*/ private OfflinePlayerProvider offlinePlayerProvider; //TODO remove in 1.0.0
 
     private CreationOptions<PlayerInventorySlot> platformCreationOptionsMainInventory;
     private CreationOptions<EnderChestSlot> platformCreationOptionsEnderInventory;
@@ -75,6 +72,7 @@ public class InvseePlusPlus extends JavaPlugin implements com.janboerman.invsee.
     }
 
     @Override
+    @SuppressWarnings("deprecation") //NamesAndUUIDs and InvseeAPI constructors are deprecated for external consumers only; this plugin is the internal caller.
     public void onEnable() {
         //if config is absent, save default config
         saveDefaultConfig();
@@ -90,9 +88,6 @@ public class InvseePlusPlus extends JavaPlugin implements com.janboerman.invsee.
         //set up default creation options
         this.platformCreationOptionsMainInventory = platform.defaultInventoryCreationOptions(this);
         this.platformCreationOptionsEnderInventory = platform.defaultEnderChestCreationOptions(this);
-
-        //TODO @Deprecated
-        this.offlinePlayerProvider = playerDatabase;
 
         //interop
         PerWorldInventoryHook pwiHook;
@@ -159,9 +154,9 @@ public class InvseePlusPlus extends JavaPlugin implements com.janboerman.invsee.
     private void setupCommands() {
         InvseeTabCompleter tabCompleter = new InvseeTabCompleter(this);
 
-        PluginCommand invseeCommand = getCommand("invsee");
-        PluginCommand enderseeCommand = getCommand("endersee");
-        PluginCommand reloadCommand = getCommand("invseeplusplusreload");
+        PluginCommand invseeCommand = Objects.requireNonNull(getCommand("invsee"), "invsee command missing from plugin.yml");
+        PluginCommand enderseeCommand = Objects.requireNonNull(getCommand("endersee"), "endersee command missing from plugin.yml");
+        PluginCommand reloadCommand = Objects.requireNonNull(getCommand("invseeplusplusreload"), "invseeplusplusreload command missing from plugin.yml");
 
         invseeCommand.setExecutor(new InvseeCommandExecutor(this));
         enderseeCommand.setExecutor(new EnderseeCommandExecutor(this));
@@ -205,16 +200,6 @@ public class InvseePlusPlus extends JavaPlugin implements com.janboerman.invsee.
     }
 
     /**
-     * Internal api.
-     * @return a stream containing all materials the server knows about
-     */
-    //Should probably move this method somewhere else.
-    //I do like this location though because it's accessible for built-in addons, but not public api.
-    public Stream<Material> itemMaterials() {
-        return platform.materials();
-    }
-
-    /**
      * Get whether InvSee++ should tabcomplete names of players who are offline.
      * @return true if tabcompletion is enabled for offline players, otherwise false
      */
@@ -224,8 +209,8 @@ public class InvseePlusPlus extends JavaPlugin implements com.janboerman.invsee.
 
     public boolean tabCompleteOfflinePlayers(FileConfiguration config) {
         Object value = config.get("tabcomplete-offline-players");
-        if (value instanceof Boolean) {
-            return ((Boolean) value).booleanValue();
+        if (value instanceof Boolean bool) {
+            return bool;
         } else {
             dirtyConfig = true;
             config.set("tabcomplete-offline-players", asyncTabcompleteEvent);
@@ -243,8 +228,8 @@ public class InvseePlusPlus extends JavaPlugin implements com.janboerman.invsee.
 
     public boolean offlinePlayerSupport(FileConfiguration config) {
         Object value = config.get("enable-offline-player-support");
-        if (value instanceof Boolean) {
-            return ((Boolean) value).booleanValue();
+        if (value instanceof Boolean bool) {
+            return bool;
         } else {
             dirtyConfig = true;
             boolean offlinePlayerSupport = platformCreationOptionsMainInventory.isOfflinePlayerSupported();
@@ -263,8 +248,8 @@ public class InvseePlusPlus extends JavaPlugin implements com.janboerman.invsee.
 
     public boolean unknownPlayerSupport(FileConfiguration config) {
         Object value = config.get("enable-unknown-player-support");
-        if (value instanceof Boolean) {
-            return ((Boolean) value).booleanValue();
+        if (value instanceof Boolean bool) {
+            return bool;
         } else {
             dirtyConfig = true;
             boolean unknownPlayerSupport = platformCreationOptionsMainInventory.isUnknownPlayerSupported();
@@ -442,44 +427,6 @@ public class InvseePlusPlus extends JavaPlugin implements com.janboerman.invsee.
         }
     }
 
-    /** @deprecated use {@link #getTitleForInventory()} instead. */
-    @Deprecated//(forRemoval = true, since = "0.21.0") //TODO remove in 1.0
-    public String getTitleForInventory(Target target) {
-        return getConfig().getString("titles.inventory", "<player>'s inventory")
-                .replace("<player>", target.toString());
-    }
-
-    /** @deprecated use {@link #getTitleForEnderChest()} instead.*/
-    @Deprecated//(forRemoval = true, since = "0.21.0") //TODO remove in 1.0
-    public String getTitleForEnderChest(Target target) {
-        return getConfig().getString("titles.enderchest", "<player>'s enderchest")
-                .replace("<player>", target.toString());
-    }
-
-    /** @deprecated use {@link #getInventoryMirror()} instead. */
-    @Deprecated//(forRemoval = true, since = "0.21.0") //TODO remove in 1.0
-    public String getInventoryTemplate() {
-        return getConfig().getString("templates.inventory",
-                "i_00 i_01 i_02 i_03 i_04 i_05 i_06 i_07 i_08\n" +
-                "i_09 i_10 i_11 i_12 i_13 i_14 i_15 i_16 i_17\n" +
-                "i_18 i_19 i_20 i_21 i_22 i_23 i_24 i_25 i_26\n" +
-                "i_27 i_28 i_29 i_30 i_31 i_32 i_33 i_34 i_35\n" +
-                "a_b  a_l  a_c  a_h  oh   c    _    _    _   \n" +
-                "p_00 p_01 p_02 p_03 p_04 p_05 p_06 p_07 p_08");
-    }
-
-    /** @deprecated use {@link #getEnderChestMirror()} instead. */
-    @Deprecated//(forRemoval = true, since = "0.21.0") //TODO remove in 1.0
-    public String getEnderChestTemplate() {
-        return getConfig().getString("templates.enderchest",
-                "e_00 e_01 e_02 e_03 e_04 e_05 e_06 e_07 e_08\n" +
-                "e_09 e_10 e_11 e_12 e_13 e_14 e_15 e_16 e_17\n" +
-                "e_18 e_19 e_20 e_21 e_22 e_23 e_24 e_25 e_26\n" +
-                "e_27 e_28 e_29 e_30 e_31 e_32 e_33 e_34 e_35\n" +
-                "e_36 e_37 e_38 e_39 e_40 e_41 e_42 e_43 e_44\n" +
-                "e_45 e_46 e_47 e_48 e_49 e_50 e_51 e_52 e_53");
-    }
-
     private static List<ResolveStrategyType> getUuidResolveStrategies(FileConfiguration config) {
         return toResolveStrategyTypes(config.getStringList("uuid-resolve-strategies"));
     }
@@ -498,14 +445,8 @@ public class InvseePlusPlus extends JavaPlugin implements com.janboerman.invsee.
     }
 
 
-    /** @deprecated use your own player database instead. */
-    @Deprecated//(forRemoval = true, since = "0.22.0") //TODO remove in 1.0
-    public OfflinePlayerProvider getOfflinePlayerProvider() {
-        return offlinePlayerProvider;
-    }
-
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, String[] args) {
         sender.sendMessage(ChatColor.YELLOW + "Oh no! It looks like InvSee++ didn't start correctly!");
         sender.sendMessage(ChatColor.YELLOW + "Most likely this is a Minecraft/InvSee++ version mismatch.");
         sender.sendMessage(ChatColor.YELLOW + "Check your logs for more information.");

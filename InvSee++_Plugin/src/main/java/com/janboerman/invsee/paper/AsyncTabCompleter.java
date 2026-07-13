@@ -40,7 +40,7 @@ public class AsyncTabCompleter implements Listener {
         this.knownLabels.addAll(listOf("invsee", "inventorysee", "isee", "endersee", "enderchestsee", "esee"));
 
         String pluginNameLower = "invseeplusplus";
-        List<String> withPrefix = this.knownLabels.stream().map(s -> pluginNameLower + ":" + s).collect(Collectors.toList());
+        List<String> withPrefix = this.knownLabels.stream().map(s -> pluginNameLower + ":" + s).toList();
         this.knownLabels.addAll(withPrefix);
 
         scheduler.executeAsync(() -> playerDatabase.getAll(this::enqueue));
@@ -130,8 +130,7 @@ public class AsyncTabCompleter implements Listener {
                         event.setCompletions(playerNames);
                         event.setHandled(true);
                     }
-                } else if (split.length == 3 && api instanceof PerWorldInventorySeeApi) {
-                    PerWorldInventorySeeApi pwiApi = (PerWorldInventorySeeApi) api;
+                } else if (split.length == 3 && api instanceof PerWorldInventorySeeApi pwiApi) {
                     String pwiArgument = split[2];
                     List<String> pwiCompletions = PwiCommandArgs.complete(pwiArgument, pwiApi.getHook());
                     event.setCompletions(pwiCompletions);
