@@ -36,7 +36,7 @@ public class FoliaScheduler implements Scheduler {
 
     @Override
     public void executeSyncGlobalRepeatedly(Runnable task, long ticksInitialDelay, long ticksPeriod) {
-        plugin.getServer().getGlobalRegionScheduler().runAtFixedRate(plugin, scheduledTask -> task.run(), ticksInitialDelay, ticksPeriod);
+        plugin.getServer().getGlobalRegionScheduler().runAtFixedRate(plugin, scheduledTask -> task.run(), Math.max(1L, ticksInitialDelay), ticksPeriod);
     }
 
     @Override
